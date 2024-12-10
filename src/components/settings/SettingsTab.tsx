@@ -103,10 +103,25 @@ const SettingsTab: React.FC = () => {
   const ProfileSection: React.FC = () => {
     const { userProfile, updateProfile } = useUser();
     const [formData, setFormData] = useState(userProfile);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      updateProfile(formData);
+      setLoading(true);
+      setError(null);
+      setSuccess(false);
+
+      try {
+        await updateProfile(formData);
+        setSuccess(true);
+      } catch (err) {
+        setError('Une erreur est survenue lors de la sauvegarde du profil');
+        console.error('Error updating profile:', err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,12 +212,35 @@ const SettingsTab: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-4">
+          {error && (
+            <div className="text-red-500 text-sm mt-2">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="text-green-500 text-sm mt-2">
+              Profil mis à jour avec succès !
+            </div>
+          )}
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={loading}
+            className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            Enregistrer les modifications
+            {loading ? (
+              <>
+                <span className="animate-spin">⌛</span>
+                <span>Sauvegarde...</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>Enregistrer les modifications</span>
+              </>
+            )}
           </button>
         </div>
       </form>

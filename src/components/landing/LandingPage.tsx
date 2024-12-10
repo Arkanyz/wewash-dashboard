@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaChartLine, FaTools, FaMobile, FaShieldAlt, FaBell, FaUsers, FaRocket, FaCrown, FaBuilding } from 'react-icons/fa';
+import { FaChartLine, FaTools, FaMobile, FaShieldAlt, FaBell, FaUsers, FaRocket, FaCrown, FaBuilding, FaQuoteLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const PricingCard = ({ title, price, features, ideal, isPopular = false }) => (
@@ -123,11 +123,10 @@ const LandingPage = () => {
           <div className="text-center">
             <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
               <span className="block">Gérez vos laveries</span>
-              <span className="block bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">en toute simplicité</span>
+              <span className="block bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">en toute sérénité</span>
             </h1>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              La solution complète pour la gestion de vos laveries automatiques.
-              Supervision en temps réel, maintenance préventive et analyses détaillées.
+              Automatisez vos opérations, réduisez vos coûts et améliorez la satisfaction client grâce à notre solution intelligente alimentée par l'IA.
             </p>
             <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
               <div className="rounded-md shadow">
@@ -135,16 +134,44 @@ const LandingPage = () => {
                   onClick={() => navigate('/register')}
                   className="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 md:py-4 md:text-lg md:px-10 transition duration-300 transform hover:scale-105"
                 >
-                  Commencer maintenant
+                  Essai gratuit 14 jours
                 </button>
               </div>
               <div className="mt-3 sm:mt-0 sm:ml-3">
                 <button
-                  onClick={() => {/* Scroll to features */}}
+                  onClick={() => {
+                    const featuresSection = document.querySelector('#features');
+                    featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                   className="w-full flex items-center justify-center px-8 py-3 text-base font-medium rounded-xl text-blue-600 bg-white border border-blue-600 hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition duration-300"
                 >
-                  En savoir plus
+                  Voir les fonctionnalités
                 </button>
+              </div>
+            </div>
+            
+            {/* Value Propositions */}
+            <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3 lg:mt-24">
+              <div className="flex flex-col items-center">
+                <div className="rounded-full bg-blue-100 p-3">
+                  <FaChartLine className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="mt-4 text-lg font-medium text-gray-900">Optimisation des coûts</h3>
+                <p className="mt-2 text-base text-gray-500 text-center">Réduisez vos coûts de maintenance de 30%</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="rounded-full bg-blue-100 p-3">
+                  <FaBell className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="mt-4 text-lg font-medium text-gray-900">Surveillance 24/7</h3>
+                <p className="mt-2 text-base text-gray-500 text-center">Alertes en temps réel et maintenance prédictive</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="rounded-full bg-blue-100 p-3">
+                  <FaUsers className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="mt-4 text-lg font-medium text-gray-900">Support dédié</h3>
+                <p className="mt-2 text-base text-gray-500 text-center">Accompagnement personnalisé à chaque étape</p>
               </div>
             </div>
           </div>
@@ -218,6 +245,113 @@ const LandingPage = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Statistiques Section */}
+      <div className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600">97%</div>
+              <div className="mt-2 text-gray-600">de clients satisfaits</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600">500+</div>
+              <div className="mt-2 text-gray-600">laveries connectées</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600">-30%</div>
+              <div className="mt-2 text-gray-600">de coûts de maintenance</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600">24/7</div>
+              <div className="mt-2 text-gray-600">support disponible</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Témoignages Section */}
+      <div className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              Ce que nos clients disent
+            </h2>
+            <p className="mt-4 text-xl text-gray-500">
+              Découvrez comment WeWash transforme la gestion des laveries
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            {[
+              {
+                name: "Marie Dubois",
+                role: "Propriétaire de laverie",
+                content: "WeWash a complètement transformé ma façon de gérer ma laverie. Le système d'alertes en temps réel m'a permis de réduire les temps d'arrêt de 40%."
+              },
+              {
+                name: "Pierre Martin",
+                role: "Gérant de chaîne de laveries",
+                content: "L'interface est intuitive et les analyses sont précieuses. J'ai une vision claire de mes performances et peux prendre des décisions éclairées."
+              },
+              {
+                name: "Sophie Laurent",
+                role: "Directrice d'exploitation",
+                content: "Le support client est exceptionnel. L'équipe est réactive et trouve toujours des solutions à nos besoins spécifiques."
+              }
+            ].map((testimonial, index) => (
+              <div key={index} className="bg-white p-8 rounded-2xl shadow-lg">
+                <FaQuoteLeft className="text-4xl text-blue-600 mb-4" />
+                <p className="text-gray-600 mb-6">{testimonial.content}</p>
+                <div>
+                  <p className="font-semibold text-gray-900">{testimonial.name}</p>
+                  <p className="text-gray-500">{testimonial.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              Questions fréquentes
+            </h2>
+            <p className="mt-4 text-xl text-gray-500">
+              Tout ce que vous devez savoir pour démarrer
+            </p>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            {[
+              {
+                question: "Comment WeWash peut-il réduire mes coûts ?",
+                answer: "Notre système de maintenance prédictive détecte les problèmes avant qu'ils ne deviennent critiques, réduisant les réparations coûteuses. De plus, l'automatisation des tâches réduit les besoins en personnel."
+              },
+              {
+                question: "Est-ce que je dois installer du matériel spécifique ?",
+                answer: "Non, WeWash s'intègre avec votre équipement existant. Notre solution est principalement logicielle et ne nécessite pas d'investissement matériel majeur."
+              },
+              {
+                question: "Combien de temps dure l'installation ?",
+                answer: "La mise en place typique prend moins de 48 heures. Notre équipe vous accompagne à chaque étape pour assurer une transition en douceur."
+              },
+              {
+                question: "Puis-je essayer WeWash avant de m'engager ?",
+                answer: "Oui ! Nous offrons un essai gratuit de 14 jours avec toutes les fonctionnalités, sans engagement et sans carte de crédit."
+              }
+            ].map((faq, index) => (
+              <div key={index} className="bg-gray-50 p-8 rounded-2xl">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{faq.question}</h3>
+                <p className="text-gray-600">{faq.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

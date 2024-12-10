@@ -16,19 +16,19 @@ const MainLayout: React.FC = () => {
 
   return (
     <UserProvider>
-      <div className="flex h-screen w-screen bg-[#1E201F] text-white overflow-hidden">
+      <div className="flex h-screen w-screen bg-[#1E201F] dark:bg-gray-950 text-white overflow-hidden">
         <Sidebar />
         
         <div className="flex-1 flex flex-col min-w-0">
           <Header showAIPanel={showAIPanel} onToggleAIPanel={() => setShowAIPanel(!showAIPanel)} />
         
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-900">
             <Outlet />
           </main>
         </div>
 
         {showAIPanel && (
-          <div className="w-[400px] border-l border-[#2A2B2A] overflow-hidden">
+          <div className="w-[400px] border-l border-[#2A2B2A] dark:border-gray-800 overflow-hidden">
             <AIPanel />
           </div>
         )}

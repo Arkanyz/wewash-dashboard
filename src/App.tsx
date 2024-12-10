@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './providers/theme-provider';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Auth Components
@@ -27,80 +28,82 @@ import AlertsConfig from './components/alerts/AlertsConfig';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Landing Page */}
-          <Route path="/" element={<LandingPage />} />
+    <ThemeProvider defaultTheme="system" enableSystem>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Landing Page */}
+            <Route path="/" element={<LandingPage />} />
 
-          {/* Routes publiques */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
+            {/* Routes publiques */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
 
-          {/* Routes protégées */}
-          <Route path="/dashboard" element={<MainLayout />}>
-            <Route index element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="laveries" element={
-              <ProtectedRoute>
-                <Laundries />
-              </ProtectedRoute>
-            } />
-            <Route path="signalements" element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            } />
-            <Route path="interventions" element={
-              <ProtectedRoute>
-                <Interventions />
-              </ProtectedRoute>
-            } />
-            <Route path="statistiques" element={
-              <ProtectedRoute>
-                <Statistics />
-              </ProtectedRoute>
-            } />
-            <Route path="tickets" element={
-              <ProtectedRoute>
-                <TicketsTab />
-              </ProtectedRoute>
-            } />
-            <Route path="maintenance" element={
-              <ProtectedRoute>
-                <Maintenance />
-              </ProtectedRoute>
-            } />
-            <Route path="parametres" element={
-              <ProtectedRoute>
-                <SettingsTab />
-              </ProtectedRoute>
-            } />
-            <Route path="faq" element={
-              <ProtectedRoute>
-                <FAQ />
-              </ProtectedRoute>
-            } />
-            <Route path="support" element={
-              <ProtectedRoute>
-                <Support />
-              </ProtectedRoute>
-            } />
-            <Route path="alertes" element={
-              <ProtectedRoute>
-                <AlertsConfig />
-              </ProtectedRoute>
-            } />
-          </Route>
-        </Routes>
-      </Router>
-    </AuthProvider>
+            {/* Routes protégées */}
+            <Route path="/dashboard" element={<MainLayout />}>
+              <Route index element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="laveries" element={
+                <ProtectedRoute>
+                  <Laundries />
+                </ProtectedRoute>
+              } />
+              <Route path="signalements" element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              } />
+              <Route path="interventions" element={
+                <ProtectedRoute>
+                  <Interventions />
+                </ProtectedRoute>
+              } />
+              <Route path="statistiques" element={
+                <ProtectedRoute>
+                  <Statistics />
+                </ProtectedRoute>
+              } />
+              <Route path="tickets" element={
+                <ProtectedRoute>
+                  <TicketsTab />
+                </ProtectedRoute>
+              } />
+              <Route path="maintenance" element={
+                <ProtectedRoute>
+                  <Maintenance />
+                </ProtectedRoute>
+              } />
+              <Route path="parametres" element={
+                <ProtectedRoute>
+                  <SettingsTab />
+                </ProtectedRoute>
+              } />
+              <Route path="faq" element={
+                <ProtectedRoute>
+                  <FAQ />
+                </ProtectedRoute>
+              } />
+              <Route path="support" element={
+                <ProtectedRoute>
+                  <Support />
+                </ProtectedRoute>
+              } />
+              <Route path="alertes" element={
+                <ProtectedRoute>
+                  <AlertsConfig />
+                </ProtectedRoute>
+              } />
+            </Route>
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -23,8 +23,28 @@ const WeLineWidget: React.FC = () => {
     totalCalls: 0,
     avgDuration: 0,
     trend: 0,
-    activeAgents: 3
+    activeAgents: 0
   });
+
+  const loadCallData = async () => {
+    try {
+      const data = await weLineService.getCallsData(selectedDate);
+      setCallData(data);
+      
+      // Calculer les statistiques à partir des vraies données
+      const totalCalls = data.reduce((acc, curr) => acc + curr.calls, 0);
+      const avgDuration = data.reduce((acc, curr) => acc + (curr.duration || 0), 0) / data.length;
+      
+      setStats(prev => ({
+        ...prev,
+        totalCalls,
+        avgDuration: Math.round(avgDuration),
+        // Note: trend et activeAgents seront mis à jour par d'autres appels API
+      }));
+    } catch (error) {
+      console.error('Erreur lors du chargement des données:', error);
+    }
+  };
 
   const handleConnect = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,34 +53,38 @@ const WeLineWidget: React.FC = () => {
 
     const formData = new FormData(e.currentTarget);
     const credentials = {
-      username: formData.get('username') as string,
+      username: formData.get('email') as string,
       password: formData.get('password') as string
     };
+
+    if (!credentials.username || !credentials.password) {
+      setError('Veuillez remplir tous les champs');
+      setIsConnecting(false);
+      return;
+    }
+
+    console.log('Tentative de connexion avec:', credentials);
 
     try {
       await weLineService.login(credentials);
       setIsConnected(true);
-      // Simuler des données pour la démo
-      const mockData = Array.from({ length: 24 }, (_, i) => ({
-        time: `${String(i).padStart(2, '0')}:00`,
-        calls: Math.floor(Math.random() * 10),
-        duration: Math.floor(Math.random() * 10) + 2
-      }));
-
-      setCallData(mockData);
-      setStats({
-        totalCalls: mockData.reduce((acc, curr) => acc + curr.calls, 0),
-        avgDuration: Math.round(mockData.reduce((acc, curr) => acc + (curr.duration || 0), 0) / mockData.length),
-        trend: 12.5,
-        activeAgents: 3
-      });
+      await loadCallData(); // Charger les vraies données après la connexion
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Erreur de connexion');
+      console.error('Erreur de connexion:', error);
+      setError(error instanceof Error ? error.message : 'Erreur de connexion à We-Line');
       setIsConnected(false);
     } finally {
       setIsConnecting(false);
     }
   };
+
+  // Mettre à jour les données toutes les minutes
+  useEffect(() => {
+    if (isConnected) {
+      const interval = setInterval(loadCallData, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [isConnected]);
 
   const StatCard = ({ icon: Icon, label, value, trend, suffix = '' }: any) => (
     <div className="bg-[#1A1D1D] p-4 rounded-lg flex items-center gap-4">
@@ -95,151 +119,103 @@ const WeLineWidget: React.FC = () => {
     </div>
   );
 
-  const MachinesList = () => (
-    <div className="mt-6 bg-[#1A1D1D] p-4 rounded-lg">
-      <h3 className="text-sm font-medium text-gray-400 mb-3">Liste des machines</h3>
-      <ul>
-        <li>Machine 1</li>
-        <li>Machine 2</li>
-        <li>Machine 3</li>
-      </ul>
-    </div>
-  );
-
-  const LoginForm = () => (
-    <div className="relative z-20">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#99E5DC] to-transparent opacity-5 blur-xl pointer-events-none" />
-      <form onSubmit={handleConnect} className="relative space-y-4">
-        <div>
-          <label htmlFor="username">Identifiant We-Line</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            placeholder="Votre identifiant"
-            className="mt-1 block w-full px-3 py-2 bg-[#1A1D1D] border border-gray-700 rounded-lg focus:outline-none focus:border-[#99E5DC]"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password">Mot de passe</label>
-          <div className="relative mt-1">
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Votre mot de passe"
-              className="block w-full px-3 py-2 bg-[#1A1D1D] border border-gray-700 rounded-lg focus:outline-none focus:border-[#99E5DC] pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 px-3 flex items-center"
-            >
-              <Lock className="h-4 w-4 text-gray-400" />
-            </button>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isConnecting}
-          className="w-full py-2 bg-[#99E5DC] text-black rounded-lg font-medium hover:bg-[#7AC4BB] transition-colors disabled:opacity-50"
-        >
-          {isConnecting ? (
-            <div className="flex items-center justify-center">
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              <span>Connexion en cours...</span>
-            </div>
-          ) : (
-            'Se connecter à We-Line'
-          )}
-        </button>
-
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <p className="text-red-500 text-sm">{error}</p>
-          </div>
-        )}
-      </form>
-    </div>
-  );
-
-  // Nettoyer les ressources lors du démontage du composant
-  useEffect(() => {
-    return () => {
-      if (isConnected) {
-        weLineService.logout();
-      }
-    };
-  }, [isConnected]);
-
   return (
-    <div className="bg-[#111313] rounded-xl p-6 text-white h-full relative overflow-hidden">
-      <WeLineAnimation />
-      
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">We-Line Analytics</h2>
-            <p className="text-gray-400 text-sm">
-              {format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })}
-            </p>
-          </div>
-          {isConnected && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1A1D1D] text-[#99E5DC] rounded-lg">
-              <Activity className="w-4 h-4" />
-              <span className="text-sm font-medium">En ligne</span>
-            </div>
-          )}
-        </div>
-
-        {!isConnected ? (
-          <LoginForm />
-        ) : (
-          <>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <StatCard
-                icon={Phone}
-                label="Appels aujourd'hui"
-                value={stats.totalCalls}
-                trend={stats.trend}
-              />
-              <StatCard
-                icon={Clock}
-                label="Durée moyenne"
-                value={stats.avgDuration}
-                suffix="min"
-              />
-            </div>
-
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Activité des appels</h3>
-              <div className="space-y-2">
-                {callData.slice(-6).map((data, index) => (
-                  <TimelineItem key={index} time={data.time} calls={data.calls} />
-                ))}
-              </div>
-            </div>
-
-            <MachinesList />
-
-            <div className="mt-6 bg-[#1A1D1D] p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-400">Agents actifs</h3>
-                <span className="text-[#99E5DC] text-sm font-medium">{stats.activeAgents}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {Array.from({ length: stats.activeAgents }).map((_, i) => (
-                  <div key={i} className="w-8 h-8 bg-[#252827] rounded-full flex items-center justify-center">
-                    <Users className="w-4 h-4 text-[#99E5DC]" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+    <div className="bg-[#141616] text-white p-6 rounded-xl">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold">We-Line Analytics</h2>
+        <p className="text-gray-400">{format(selectedDate, 'EEEE d MMMM yyyy', { locale: fr })}</p>
       </div>
+
+      {!isConnected ? (
+        <form onSubmit={handleConnect} className="max-w-sm mx-auto space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1">
+              Adresse e-mail
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Votre adresse e-mail"
+              className="w-full px-4 py-2 bg-[#1A1D1D] border border-[#252827] rounded-lg focus:outline-none focus:border-[#99E5DC]"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-1">
+              Mot de passe
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                id="password"
+                placeholder="Votre mot de passe"
+                className="w-full px-4 py-2 bg-[#1A1D1D] border border-[#252827] rounded-lg focus:outline-none focus:border-[#99E5DC]"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <Lock className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          {error && (
+            <p className="text-red-500 text-sm">{error}</p>
+          )}
+          <button
+            type="submit"
+            disabled={isConnecting}
+            className="w-full bg-[#99E5DC] text-[#141616] py-2 rounded-lg font-medium hover:bg-[#7AC7BE] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isConnecting ? (
+              <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+            ) : (
+              'Se connecter à We-Line'
+            )}
+          </button>
+        </form>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <StatCard
+              icon={Phone}
+              label="Appels totaux"
+              value={stats.totalCalls}
+              trend={stats.trend}
+            />
+            <StatCard
+              icon={Clock}
+              label="Durée moyenne"
+              value={stats.avgDuration}
+              suffix="min"
+            />
+            <StatCard
+              icon={Users}
+              label="Agents actifs"
+              value={stats.activeAgents}
+            />
+            <StatCard
+              icon={Activity}
+              label="Taux de réponse"
+              value={98}
+              suffix="%"
+              trend={2.5}
+            />
+          </div>
+
+          <div className="space-y-2">
+            {callData.map((item, index) => (
+              <TimelineItem key={index} time={item.time} calls={item.calls} />
+            ))}
+          </div>
+
+          <MachinesList />
+        </>
+      )}
     </div>
   );
 };

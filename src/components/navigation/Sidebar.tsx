@@ -14,19 +14,19 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: Building2, label: 'Laveries', path: '/laveries' },
-  { icon: AlertTriangle, label: 'Signalements', path: '/signalements' },
-  { icon: Wrench, label: 'Interventions', path: '/interventions' },
-  { icon: BarChart2, label: 'Statistiques', path: '/statistiques' },
-  { icon: Receipt, label: 'Tickets', path: '/tickets' },
-  { icon: Wrench, label: 'Maintenance', path: '/maintenance' },
-  { icon: Settings, label: 'Paramètres', path: '/parametres' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+  { icon: Building2, label: 'Laveries', path: '/dashboard/laveries' },
+  { icon: AlertTriangle, label: 'Signalements', path: '/dashboard/signalements' },
+  { icon: Wrench, label: 'Interventions', path: '/dashboard/interventions' },
+  { icon: BarChart2, label: 'Statistiques', path: '/dashboard/statistiques' },
+  { icon: Receipt, label: 'Tickets', path: '/dashboard/tickets' },
+  { icon: Wrench, label: 'Maintenance', path: '/dashboard/maintenance' },
+  { icon: Settings, label: 'Paramètres', path: '/dashboard/parametres' },
 ];
 
 const supportItems = [
-  { icon: HelpCircle, label: 'FAQ', path: '/faq' },
-  { icon: MessagesSquare, label: 'Assistance', path: '/assistance' },
+  { icon: HelpCircle, label: 'FAQ', path: '/dashboard/faq' },
+  { icon: MessagesSquare, label: 'Assistance', path: '/dashboard/support' },
 ];
 
 const Sidebar: React.FC = () => {
