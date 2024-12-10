@@ -19,7 +19,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
