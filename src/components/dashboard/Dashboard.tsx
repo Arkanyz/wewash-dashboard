@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Calendar from '../calendar/Calendar';
+import TasksOverview from '../tasks/TasksOverview';
 import WeLineWidget from '../weline/WeLineWidget';
 import { Droplet, CreditCard, Lock, Thermometer, MoreHorizontal } from 'lucide-react';
 import { useSupabase } from '../../providers/SupabaseProvider';
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Calendar />
+        <TasksOverview />
         <WeLineWidget />
       </div>
       

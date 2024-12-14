@@ -1,39 +1,38 @@
-import React, { useState } from 'react';
-import { LayoutDashboard, Calendar, Phone, Settings } from 'lucide-react';
-import { Outlet } from 'react-router-dom';
-import Sidebar from '../components/navigation/Sidebar';
-import Header from '../components/navigation/Header';
-import AIPanel from '../components/ai/AIPanel';
-import Dashboard from '../components/dashboard/Dashboard';
-import CalendarTab from '../components/calendar/Calendar';
-import WeLineWidget from '../components/weline/WeLineWidget';
-import SettingsTab from '../components/settings/SettingsTab';
-import { UserProvider } from '../contexts/UserContext';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../components/navigation/Sidebar";
+import Header from "../components/header/Header";
+import AIPanel from "../components/ai/AIPanel";
 
-const MainLayout: React.FC = () => {
+const MainLayout = () => {
   const [showAIPanel, setShowAIPanel] = useState(true);
-  const [currentPath, setCurrentPath] = useState('/');
 
   return (
-    <UserProvider>
-      <div className="flex h-screen w-screen bg-[#1E201F] dark:bg-gray-950 text-white overflow-hidden">
-        <Sidebar />
-        
-        <div className="flex-1 flex flex-col min-w-0">
-          <Header showAIPanel={showAIPanel} onToggleAIPanel={() => setShowAIPanel(!showAIPanel)} />
-        
-          <main className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-900">
-            <Outlet />
+    <div className="flex h-screen bg-[#f5f5f7] dark:bg-[#1d1d1f]">
+      <Sidebar />
+      <div className="flex flex-1 flex-col">
+        <Header onToggleAI={() => setShowAIPanel(!showAIPanel)} showAI={showAIPanel} />
+        <div className="flex flex-1 overflow-hidden">
+          <main className="flex-1 p-8">
+            <div className="h-full rounded-2xl bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl shadow-sm">
+              <div className="h-full overflow-auto px-8 py-6">
+                <Outlet />
+              </div>
+            </div>
           </main>
-        </div>
 
-        {showAIPanel && (
-          <div className="w-[400px] border-l border-[#2A2B2A] dark:border-gray-800 overflow-hidden">
-            <AIPanel />
+          {/* Panneau IA avec animation de transition */}
+          <div
+            className={`w-[400px] transition-all duration-300 ease-in-out transform 
+                       ${showAIPanel ? 'translate-x-0' : 'translate-x-full'} 
+                       border-l border-gray-200/50 dark:border-gray-800/50 
+                       bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl`}
+          >
+            {showAIPanel && <AIPanel />}
           </div>
-        )}
+        </div>
       </div>
-    </UserProvider>
+    </div>
   );
 };
 

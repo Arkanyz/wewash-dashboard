@@ -1,92 +1,65 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  Building2,
-  AlertTriangle,
-  Wrench,
-  BarChart2,
-  Ticket,
-  HelpCircle,
-  MessagesSquare,
-  Settings,
-  Receipt
-} from 'lucide-react';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { IconHome, IconWashMachine, IconReportAnalytics, IconSettings, IconUsers } from "@tabler/icons-react";
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
-  { icon: Building2, label: 'Laveries', path: '/dashboard/laveries' },
-  { icon: AlertTriangle, label: 'Signalements', path: '/dashboard/signalements' },
-  { icon: Wrench, label: 'Interventions', path: '/dashboard/interventions' },
-  { icon: BarChart2, label: 'Statistiques', path: '/dashboard/statistiques' },
-  { icon: Receipt, label: 'Tickets', path: '/dashboard/tickets' },
-  { icon: Wrench, label: 'Maintenance', path: '/dashboard/maintenance' },
-  { icon: Settings, label: 'Paramètres', path: '/dashboard/parametres' },
-];
+const Sidebar = () => {
+  const location = useLocation();
 
-const supportItems = [
-  { icon: HelpCircle, label: 'FAQ', path: '/dashboard/faq' },
-  { icon: MessagesSquare, label: 'Assistance', path: '/dashboard/support' },
-];
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
-const Sidebar: React.FC = () => {
+  const navigationItems = [
+    { path: "/", icon: IconHome, label: "Dashboard" },
+    { path: "/laundries", icon: IconWashMachine, label: "Laveries" },
+    { path: "/reports", icon: IconReportAnalytics, label: "Rapports" },
+    { path: "/users", icon: IconUsers, label: "Utilisateurs" },
+    { path: "/settings", icon: IconSettings, label: "Paramètres" },
+  ];
+
   return (
-    <aside className="w-64 bg-[#1a1a1a] border-r border-gray-800">
-      <div className="h-full flex flex-col">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-white">WeWash</h1>
-        </div>
+    <aside className="w-[220px] bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-800/50">
+      {/* Logo */}
+      <div className="flex h-14 items-center px-6 border-b border-gray-200/50 dark:border-gray-800/50">
+        <IconWashMachine className="h-8 w-8 text-blue-500" />
+        <span className="ml-3 text-lg font-medium text-gray-900 dark:text-white">
+          WeWash
+        </span>
+      </div>
 
-        <nav className="flex-1 space-y-1 px-3">
-          {navItems.map((item) => (
-            <NavLink
+      {/* Navigation */}
+      <nav className="space-y-1 p-4">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.path);
+          return (
+            <Link
               key={item.path}
               to={item.path}
-              className={({ isActive }) =>
-                `flex items-center px-3 py-2 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }`
-              }
+              className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                ${
+                  active
+                    ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#202022]"
+                }`}
             >
-              <item.icon className="h-5 w-5 mr-3" />
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+              <Icon className={`h-5 w-5 ${active ? "text-blue-600 dark:text-blue-400" : ""}`} />
+              <span>{item.label}</span>
+              {active && (
+                <div className="ml-auto h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
 
-        <div className="p-4 border-t border-gray-800">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
-            SUPPORT
-          </p>
-          {supportItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center px-3 py-2 rounded-lg transition-colors ${
-                  isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }`
-              }
-            >
-              <item.icon className="h-5 w-5 mr-3" />
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
-
-        <div className="p-4 border-t border-gray-800">
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-white">Become Pro Access</h3>
-            <p className="text-xs text-gray-400 mt-1">
-              Try your experience for using more features
-            </p>
-            <button className="mt-3 w-full bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition-colors">
-              Upgrade Pro
-            </button>
+      {/* Footer */}
+      <div className="absolute bottom-0 w-full p-4 border-t border-gray-200/50 dark:border-gray-800/50">
+        <div className="flex items-center px-4 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300">
+          <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-100 dark:bg-[#202022]" />
+          <div className="ml-3">
+            <p className="font-medium">John Doe</p>
+            <p className="text-xs text-gray-500">Administrateur</p>
           </div>
         </div>
       </div>
