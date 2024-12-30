@@ -1,0 +1,19 @@
+.panel {
+  @apply bg-[#111313] rounded-xl p-6 text-white;
+}
+
+.btn-accent {
+  @apply px-4 py-2 bg-[#99E5DC] text-[#1E201F] rounded-lg hover:bg-[#7BC5BC] transition-colors;
+}
+
+.calendar-day {
+  @apply h-10 flex items-center justify-center rounded-lg cursor-pointer text-sm;
+}
+
+.calendar-day-default {
+  @apply hover:bg-[#1F211F] transition-colors;
+}
+
+.calendar-day-selected {
+  @apply bg-[#99E5DC] text-[#1E201F];
+}

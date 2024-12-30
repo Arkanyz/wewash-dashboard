@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: #1E201F;
+  --color-panel: #111313;
+  --color-accent: #99E5DC;
+  --color-text-secondary: #616A6A;
+  --color-ai-gradient-1: #C7D7F1;
+  --color-ai-gradient-2: #D7E2F4;
+  --color-ai-gradient-3: #E8EFFA;
+  --color-ai-gradient-4: #F6F9FC;
+  --color-ai-mesh: #86A3D5;
+  --color-ai-text: #343236;
+  --color-calendar-bg: #1F211F;
+}
+
+html {
+  @apply h-full bg-[#1E201F] text-white antialiased;
+}
+
+body {
+  @apply h-full;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+#root {
+  @apply h-full;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d3d3d;
+}
+
+/* Calendar Styles */
+.calendar-day {
+  @apply h-10 flex items-center justify-center rounded-lg cursor-pointer text-sm;
+}
+
+.calendar-day-default {
+  @apply hover:bg-[#1F211F] transition-colors;
+}
+
+.calendar-day-selected {
+  @apply bg-[#99E5DC] text-[#1E201F];
+}
+
+/* Panel Styles */
+.panel {
+  @apply bg-[#111313] rounded-xl p-6 text-white;
+}
+
+/* Button Styles */
+.btn-accent {
+  @apply px-4 py-2 bg-[#99E5DC] text-[#1E201F] rounded-lg hover:bg-[#7BC5BC] transition-colors;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* Custom Calendar Styles */
+.react-calendar {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  font-family: inherit;
+  padding: 1rem;
+}
+
+.react-calendar button {
+  color: #9ca3af !important;
+  padding: 0.75rem !important;
+  font-size: 0.875rem;
+}
+
+.react-calendar__month-view__weekdays {
+  @apply text-gray-500 text-xs uppercase;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #9ca3af !important;
+}
+
+.react-calendar__tile--now {
+  @apply bg-orange-500/20 text-orange-500 rounded-lg !important;
+}
+
+.react-calendar__tile--active {
+  @apply bg-blue-500/20 text-blue-500 rounded-lg !important;
+}
+
+.react-calendar__tile:enabled:hover {
+  @apply bg-gray-800 rounded-lg !important;
+}
+
+.react-calendar__navigation {
+  @apply mb-4;
+}
+
+.react-calendar__navigation button {
+  @apply text-gray-400 !important;
+}
+
+.react-calendar__navigation button:disabled {
+  @apply bg-transparent !important;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  @apply bg-gray-800 rounded-lg !important;
+}
+
+/* Tremor Custom Styles */
+.tremor-Card-root {
+  @apply bg-gray-900/50 border-gray-800 !important;
+}
+
+.tremor-Title-root {
+  @apply text-white !important;
+}
+
+/* Custom Components */
+.sync-button {
+  @apply bg-blue-500/20 text-white rounded-xl p-6 w-full flex items-center justify-center space-x-3 hover:bg-blue-500/30 transition-colors;
+}
+
+.status-badge {
+  @apply px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.status-badge.en-cours {
+  @apply bg-yellow-500/20 text-yellow-500;
+}
+
+.status-badge.traite {
+  @apply bg-green-500/20 text-green-500;
+}
+
+.status-badge.non-resolu {
+  @apply bg-red-500/20 text-red-500;
+}
+
+/* AI Assistant Styles */
+.ai-assistant-container {
+  transition: all 0.3s ease;
+}
+
+.ai-button {
+  @apply bg-white rounded-lg p-4 text-[14px] font-sans text-center
+         shadow-sm hover:bg-[#F3F3F3] transition-colors duration-200
+         border border-gray-100;
+}
+
+.voice-button {
+  @apply bg-black text-white rounded-[25px] p-4
+         hover:bg-black/90 transition-all duration-200
+         flex items-center justify-center space-x-3;
+}
+
+/* Three.js Canvas Styles */
+canvas {
+  touch-action: none;
+  width: 100% !important;
+  height: 100% !important;
+}

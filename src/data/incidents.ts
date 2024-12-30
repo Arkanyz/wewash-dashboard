@@ -1,0 +1,48 @@
+import { Icons } from '../components/common/Icons';
+
+export const incidents = [
+  {
+    id: 1,
+    icon: Icons.Droplet,
+    problem: 'Fuite d\'eau importante',
+    location: 'Laverie Centrale',
+    machine: 'Lave-linge #L001',
+    date: '15 janvier 2024',
+    status: 'en-cours',
+    statusText: 'En cours',
+    action: 'Intervention programmée',
+  },
+  {
+    id: 2,
+    icon: Icons.CreditCard,
+    problem: 'Terminal de paiement HS',
+    location: 'Laverie Express',
+    machine: 'Terminal #P001',
+    date: '15 janvier 2024',
+    status: 'traite',
+    statusText: 'Traité',
+    action: 'Résolu par IA',
+  },
+  {
+    id: 3,
+    icon: Icons.Lock,
+    problem: 'Porte bloquée',
+    location: 'Laverie du Marais',
+    machine: 'Sèche-linge #S001',
+    date: '15 janvier 2024',
+    status: 'non-resolu',
+    statusText: 'Non résolu',
+    action: 'En attente d\'analyse',
+  },
+  {
+    id: 4,
+    icon: Icons.Thermometer,
+    problem: 'Problème de température',
+    location: 'Laverie Saint-Michel',
+    machine: 'Sèche-linge #S002',
+    date: '15 janvier 2024',
+    status: 'en-cours',
+    statusText: 'En cours',
+    action: 'Technicien en route',
+  },
+];
