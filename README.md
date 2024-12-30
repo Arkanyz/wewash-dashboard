@@ -1,11 +1,19 @@
-# React + TypeScript + Vite
+# WeWash Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application de gestion de laveries connectées.
 
-Currently, two official plugins are available:
+## Déploiement
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+L'application est automatiquement déployée sur Vercel à chaque push sur la branche master.
+
+## Fonctionnalités
+
+- Gestion des laveries
+- Suivi des machines
+- Rapports et analytics
+- Système de notifications
+- Mode hors ligne
+- Gestion des interventions
 
 ## Expanding the ESLint configuration
 
