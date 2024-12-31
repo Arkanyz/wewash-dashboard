@@ -2,18 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './providers/theme-provider';
-import { MantineProvider } from './providers/mantine-provider';
+import { MantineProvider } from '@mantine/core';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-
-// Auth Components
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import ForgotPassword from './components/auth/ForgotPassword';
-import ResetPassword from './components/auth/ResetPassword';
-import VerifyEmail from './components/auth/VerifyEmail';
-
-// Protected Components
-import MainLayout from './layouts/MainLayout';
+import { AppShell } from './components/Layout/AppShell';
+import { HelpCenter } from './components/Support/HelpCenter';
 import Dashboard from './pages/Dashboard';
 import Laundries from './pages/Laundries';
 import Technicians from './pages/Technicians';
@@ -39,20 +31,18 @@ function App() {
               <Route path="/verify-email" element={<VerifyEmail />} />
 
               {/* Routes protégées */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <MainLayout />
-                  </ProtectedRoute>
-                }
-              >
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <AppShell />
+                </ProtectedRoute>
+              }>
                 <Route index element={<Dashboard />} />
                 <Route path="laundries" element={<Laundries />} />
                 <Route path="technicians" element={<Technicians />} />
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="support" element={<Support />} />
+                <Route path="help-center" element={<HelpCenter />} />
               </Route>
 
               {/* Redirection par défaut vers le dashboard */}
