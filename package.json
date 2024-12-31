@@ -8,8 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rimraf node_modules/.vite dist",
-    "reset": "rimraf node_modules/.vite && npm install",
-    "playwright:install": "playwright install chromium"
+    "reset": "rimraf node_modules/.vite && npm install"
   },
   "dependencies": {
     "@mantine/core": "^7.14.3",
