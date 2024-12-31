@@ -1,6 +1,6 @@
-name: Vercel Production Deployment
+name: Déploiement Vercel
 env:
-  VERCEL_TOKEN: glgkeOT25QzTAkOH1ZCq5iJf
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 on:
   push:
@@ -8,24 +8,25 @@ on:
       - master
 
 jobs:
-  Deploy-Production:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Node.js
+      - name: Installation de Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Installation des dépendances
+        run: |
+          npm install
+          npm run build
 
-      - name: Deploy to Vercel
+      - name: Déploiement sur Vercel
         uses: vercel/actions/cli@master
-        with:
-          vercel-token: ${{ env.VERCEL_TOKEN }}
-          vercel-org-id: arkanyzs-projects
-          vercel-project-id: prj_67D5xYdOKxpP1xe8u9ozSrmTx4Ax
-          working-directory: ./
-          vercel-args: '--prod'
+        env:
+          VERCEL_ORG_ID: arkanyzs-projects
+          VERCEL_PROJECT_ID: prj_67D5xYdOKxpP1xe8u9ozSrmTx4Ax
+        run: |
+          vercel --token ${VERCEL_TOKEN} --prod
