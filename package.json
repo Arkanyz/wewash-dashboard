@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "vercel-build": "npm run build",
+    "build": "vite build",
     "preview": "vite preview",
     "clean": "rimraf node_modules/.vite dist",
     "reset": "rimraf node_modules/.vite && npm install",
