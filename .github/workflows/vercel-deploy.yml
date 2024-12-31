@@ -23,10 +23,11 @@ jobs:
           npm install
           npm run build
 
+      - name: Installation de Vercel CLI
+        run: npm install --global vercel@latest
+
       - name: Déploiement sur Vercel
-        uses: vercel/actions/cli@master
-        env:
-          VERCEL_ORG_ID: arkanyzs-projects
-          VERCEL_PROJECT_ID: prj_67D5xYdOKxpP1xe8u9ozSrmTx4Ax
         run: |
-          vercel --token ${VERCEL_TOKEN} --prod
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
