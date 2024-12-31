@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './providers/theme-provider';
 import { MantineProvider } from '@mantine/core';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import { AppShell } from './components/Layout/AppShell';
+import { AppLayout } from './components/Layout/AppShell';
 import { HelpCenter } from './components/Support/HelpCenter';
 import Dashboard from './pages/Dashboard';
 import Laundries from './pages/Laundries';
@@ -33,7 +33,7 @@ function App() {
               {/* Routes protégées */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <AppShell />
+                  <AppLayout />
                 </ProtectedRoute>
               }>
                 <Route index element={<Dashboard />} />

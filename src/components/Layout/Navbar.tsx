@@ -1,4 +1,4 @@
-import { Navbar as MantineNavbar, NavLink, ScrollArea } from '@mantine/core';
+import { NavLink, ScrollArea } from '@mantine/core';
 import { IconQuestionMark, IconDashboard, IconSettings, IconChartBar, IconTool } from '@tabler/icons-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -25,10 +25,12 @@ export function Navbar() {
   ));
 
   return (
-    <MantineNavbar width={{ base: 300 }} p="xs">
-      <MantineNavbar.Section grow component={ScrollArea}>
-        {items}
-      </MantineNavbar.Section>
-    </MantineNavbar>
+    <nav className="mantine-navbar" style={{ width: 300, padding: '1rem' }}>
+      <ScrollArea>
+        <div className="mantine-navbar-links">
+          {items}
+        </div>
+      </ScrollArea>
+    </nav>
   );
 }
