@@ -1,27 +1,27 @@
-import { AppShell, Header, Text } from '@mantine/core';
+import { AppShell as MantineAppShell, Header, Text } from '@mantine/core';
 import { Navbar } from './Navbar';
 import { Outlet } from 'react-router-dom';
 
-export function AppShell() {
+export function AppLayout() {
   return (
-    <AppShell
+    <MantineAppShell
       padding="md"
       navbar={{ width: 300, breakpoint: 'sm' }}
       header={{ height: 60 }}
     >
-      <AppShell.Header>
+      <MantineAppShell.Header>
         <Header height={60} p="xs">
           <Text size="xl" fw={700}>WeWash Dashboard</Text>
         </Header>
-      </AppShell.Header>
+      </MantineAppShell.Header>
 
-      <AppShell.Navbar>
+      <MantineAppShell.Navbar>
         <Navbar />
-      </AppShell.Navbar>
+      </MantineAppShell.Navbar>
 
-      <AppShell.Main>
+      <MantineAppShell.Main>
         <Outlet />
-      </AppShell.Main>
-    </AppShell>
+      </MantineAppShell.Main>
+    </MantineAppShell>
   );
 }
