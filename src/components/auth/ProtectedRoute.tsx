@@ -19,7 +19,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Stocker l'URL actuelle pour rediriger après la connexion
+    return <Navigate to="/welcome" state={{ from: location.pathname }} replace />;
   }
 
   return <>{children}</>;

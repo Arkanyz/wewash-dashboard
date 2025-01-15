@@ -1,49 +1,58 @@
 # WeWash Dashboard
 
-## À propos
+Application de gestion de laveries connectées.
 
-WeWash Dashboard est une application web moderne pour la gestion de laveries connectées. Elle offre une interface intuitive pour suivre et gérer vos installations en temps réel.
+## Déploiement
 
-## Documentation
+L'application est automatiquement déployée sur Vercel à chaque push sur la branche master.
 
-- [Guide d'Installation](./docs/installation/README.md)
-- [Documentation Technique](./docs/technique/README.md)
-- [Guide Utilisateur](./docs/utilisateur/README.md)
-- [Documentation API](./docs/api/README.md)
+## Fonctionnalités
 
-## Fonctionnalités Principales
+- Gestion des laveries
+- Suivi des machines
+- Rapports et analytics
+- Système de notifications
+- Mode hors ligne
+- Gestion des interventions
 
-- 🏢 Gestion des laveries
-- 🔧 Suivi des machines en temps réel
-- 🚨 Système d'alertes et notifications
-- 📊 Rapports et analyses détaillés
-- 🛠️ Gestion des interventions
-- 📱 Interface responsive
+## Expanding the ESLint configuration
 
-## Stack Technique
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-- Frontend : React + Vite
-- UI : Mantine UI + Tailwind CSS
-- Backend : Supabase
-- Déploiement : Vercel
+- Configure the top-level `parserOptions` property like this:
 
-## Démarrage Rapide
-
-```bash
-# Cloner le projet
-git clone https://github.com/Arkanyz/wewash-dashboard.git
-
-# Installer les dépendances
-npm install
-
-# Lancer en développement
-npm run dev
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-## Contribution
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-Les contributions sont les bienvenues ! Consultez notre [guide de contribution](./docs/CONTRIBUTING.md) pour plus d'informations.
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
 
-## Licence
-
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```

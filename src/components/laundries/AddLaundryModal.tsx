@@ -1,219 +1,379 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Plus, MapPin, Check, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface LaundryFormData {
+export interface LaundryData {
   name: string;
   address: string;
-  city: string;
-  postal_code: string;
-  contact_name: string;
-  phone: string;
-  email: string;
+  ville: string;
+  code_postal: string;
+  size: 'small' | 'medium' | 'large';
+  services: string[];
 }
 
 interface AddLaundryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (laundryData: LaundryFormData) => Promise<void>;
+  onSubmit: (laundryData: LaundryData) => Promise<void>;
 }
 
-const AddLaundryModal: React.FC<AddLaundryModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState<LaundryFormData>({
+const availableServices = [
+  { id: 'wifi', label: 'Wi-Fi Gratuit' },
+  { id: 'waiting_area', label: 'Espace d\'attente' },
+  { id: 'vending', label: 'Distributeurs' },
+  { id: 'payment_terminal', label: 'Borne de paiement' },
+  { id: 'air_conditioning', label: 'Climatisation' },
+  { id: 'security_cameras', label: 'Caméras de sécurité' },
+];
+
+const AddLaundryModal: React.FC<AddLaundryModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit,
+}) => {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<LaundryData>({
     name: '',
     address: '',
-    city: '',
-    postal_code: '',
-    contact_name: '',
-    phone: '',
-    email: '',
+    ville: '',
+    code_postal: '',
+    size: 'medium',
+    services: [],
   });
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
-    setFormData({
-      name: '',
-      address: '',
-      city: '',
-      postal_code: '',
-      contact_name: '',
-      phone: '',
-      email: '',
-    });
-    onClose();
+    if (step < 2) {
+      if (step === 1 && (!formData.name || !formData.address || !formData.ville || !formData.code_postal)) {
+        alert('Veuillez remplir tous les champs obligatoires');
+        return;
+      }
+      setStep(step + 1);
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const dataToSubmit = {
+        ...formData,
+        ville: formData.ville.trim(),
+        code_postal: formData.code_postal.trim(),
+      };
+      await onSubmit(dataToSubmit);
+      onClose();
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de la laverie:', error);
+      alert('Une erreur est survenue lors de la création de la laverie');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const modalContent = (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-            onClick={onClose}
-          />
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-[#111313] rounded-xl shadow-xl p-6 w-full max-w-lg">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-white">Ajouter une laverie</h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-400" />
-                </button>
+  const toggleService = (serviceId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      services: prev.services.includes(serviceId)
+        ? prev.services.filter(id => id !== serviceId)
+        : [...prev.services, serviceId]
+    }));
+  };
+
+  if (!isOpen) return null;
+
+  const renderStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nom de la laverie*
+              </label>
+              <input
+                type="text"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 focus:border-[#286BD4] focus:ring-2 focus:ring-[#286BD4]/20 focus:outline-none"
+                placeholder="Ex: Laverie du Centre"
+              />
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Adresse complète*
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="address"
+                  required
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 focus:border-[#286BD4] focus:ring-2 focus:ring-[#286BD4]/20 focus:outline-none pl-10"
+                  placeholder="Numéro et nom de rue"
+                />
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  name="ville"
+                  required
+                  value={formData.ville}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 focus:border-[#286BD4] focus:ring-2 focus:ring-[#286BD4]/20 focus:outline-none"
+                  placeholder="Ville"
+                />
+                <input
+                  type="text"
+                  name="code_postal"
+                  required
+                  value={formData.code_postal}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 focus:border-[#286BD4] focus:ring-2 focus:ring-[#286BD4]/20 focus:outline-none"
+                  placeholder="Code postal"
+                />
+              </div>
+            </div>
+          </div>
+        );
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-4">
-                  {/* Informations de la laverie */}
-                  <div>
-                    <h3 className="text-sm font-medium text-[#99E5DC] mb-3">Informations de la laverie</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm text-gray-400">Nom de la laverie *</label>
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                          placeholder="Laverie Centrale"
-                          required
-                        />
-                      </div>
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Taille de la laverie
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 'small', label: 'Petite' },
+                  { value: 'medium', label: 'Moyenne' },
+                  { value: 'large', label: 'Grande' }
+                ].map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, size: option.value as any }))}
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      formData.size === option.value
+                        ? 'border-[#286BD4] bg-blue-50 text-[#286BD4]'
+                        : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Services disponibles
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {availableServices.map(service => (
+                  <button
+                    key={service.id}
+                    type="button"
+                    onClick={() => toggleService(service.id)}
+                    className={`p-4 rounded-xl border-2 text-left transition-all ${
+                      formData.services.includes(service.id)
+                        ? 'border-[#286BD4] bg-blue-50 text-[#286BD4]'
+                        : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'
+                    }`}
+                  >
+                    {service.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-sm font-medium text-gray-700 mb-4">Récapitulatif</h3>
+              <dl className="grid grid-cols-2 gap-4">
+                <div>
+                  <dt className="text-sm text-gray-500">Nom</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{formData.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-gray-500">Adresse</dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {formData.address}, {formData.code_postal} {formData.ville}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-gray-500">Taille</dt>
+                  <dd className="mt-1 text-sm text-gray-900 capitalize">
+                    {formData.size === 'small' ? 'Petite' : 
+                     formData.size === 'medium' ? 'Moyenne' : 'Grande'}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-gray-500">Services</dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {formData.services.length > 0 
+                      ? formData.services.map(id => 
+                          availableServices.find(s => s.id === id)?.label
+                        ).join(', ')
+                      : 'Aucun service sélectionné'}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="relative w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden"
+          initial={{ scale: 0.95, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        >
+          <div className="px-8 py-6 bg-gradient-to-r from-[#286BD4] to-[#1E5BB7] text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold">
+                  Nouvelle laverie
+                </h2>
+                <p className="mt-1 text-white/80">
+                  Étape {step}/2 : {
+                    step === 1 ? 'Informations générales' : 'Caractéristiques'
+                  }
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-xl hover:bg-white/10 transition-colors"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+          </div>
+
+          <div className="relative">
+            {/* Barre de progression */}
+            <div className="px-8 py-6">
+              <div className="max-w-[400px] mx-auto">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 flex flex-col items-center">
+                    <button
+                      onClick={() => step > 1 && setStep(1)}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                        step === 1
+                          ? 'bg-[#286BD4] text-white ring-4 ring-blue-100'
+                          : step > 1
+                          ? 'bg-[#286BD4] text-white cursor-pointer hover:ring-4 hover:ring-blue-100'
+                          : 'bg-gray-100 text-gray-400'
+                      }`}
+                    >
+                      1
+                    </button>
+                    <span className="mt-2 text-sm font-medium text-gray-600">
+                      Informations
+                    </span>
+                  </div>
+
+                  <div className="flex-1 mx-4 pt-5">
+                    <div className="h-1 rounded-full bg-gray-100">
+                      <motion.div
+                        className="h-full bg-[#286BD4] rounded-full"
+                        initial={{ width: '0%' }}
+                        animate={{ width: step > 1 ? '100%' : '0%' }}
+                        transition={{ duration: 0.3 }}
+                      />
                     </div>
                   </div>
 
-                  {/* Adresse */}
-                  <div>
-                    <h3 className="text-sm font-medium text-[#99E5DC] mb-3">Adresse</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm text-gray-400">Adresse *</label>
-                        <input
-                          type="text"
-                          value={formData.address}
-                          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                          className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                          placeholder="123 rue de la Laverie"
-                          required
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-sm text-gray-400">Ville *</label>
-                          <input
-                            type="text"
-                            value={formData.city}
-                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                            className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                            placeholder="Paris"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="text-sm text-gray-400">Code postal *</label>
-                          <input
-                            type="text"
-                            value={formData.postal_code}
-                            onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
-                            className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                            placeholder="75001"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Contact */}
-                  <div>
-                    <h3 className="text-sm font-medium text-[#99E5DC] mb-3">Contact</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm text-gray-400">Nom du contact *</label>
-                        <input
-                          type="text"
-                          value={formData.contact_name}
-                          onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
-                          className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                          placeholder="Jean Dupont"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">Téléphone *</label>
-                        <input
-                          type="tel"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                          placeholder="06 12 34 56 78"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm text-gray-400">Email *</label>
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full bg-[#1E201F] text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#99E5DC]"
-                          placeholder="contact@laverie.fr"
-                          required
-                        />
-                      </div>
-                    </div>
+                  <div className="flex-1 flex flex-col items-center">
+                    <button
+                      onClick={() => step > 1 && setStep(2)}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                        step === 2
+                          ? 'bg-[#286BD4] text-white ring-4 ring-blue-100'
+                          : step > 2
+                          ? 'bg-[#286BD4] text-white cursor-pointer hover:ring-4 hover:ring-blue-100'
+                          : 'bg-gray-100 text-gray-400'
+                      }`}
+                    >
+                      2
+                    </button>
+                    <span className="mt-2 text-sm font-medium text-gray-600">
+                      Caractéristiques
+                    </span>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                <div className="flex justify-end gap-3 pt-4">
+            <form onSubmit={handleSubmit} className="p-8">
+              {renderStepContent()}
+
+              <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+                {step > 1 ? (
                   <button
                     type="button"
-                    onClick={onClose}
-                    className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                    onClick={() => setStep(step - 1)}
+                    className="inline-flex items-center px-6 py-3 bg-white text-gray-700 hover:text-gray-900 font-medium rounded-xl border border-gray-200 hover:border-gray-300 transition-colors"
                   >
-                    Annuler
+                    Retour
                   </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-[#99E5DC] text-[#1E201F] rounded-lg hover:bg-[#7BC5BC] transition-colors"
-                  >
-                    Ajouter
-                  </button>
-                </div>
-              </form>
-            </div>
-          </motion.div>
-        </>
-      )}
+                ) : (
+                  <div></div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
+                    isSubmitting
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-[#286BD4] border-2 border-[#286BD4] hover:bg-blue-50'
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Création en cours...
+                    </>
+                  ) : step < 2 ? (
+                    'Suivant'
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5 mr-2" />
+                      Créer la laverie
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      </motion.div>
     </AnimatePresence>
   );
-
-  const modalRoot = document.getElementById('modal-root');
-  
-  if (!mounted || !modalRoot) return null;
-  
-  return createPortal(modalContent, modalRoot);
 };
 
 export default AddLaundryModal;

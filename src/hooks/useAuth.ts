@@ -78,9 +78,9 @@ export function useAuth() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      navigate('/login');
+      navigate('/welcome');
     } catch (error) {
-      throw error;
+      console.error('Error signing out:', error);
     }
   };
 
@@ -125,8 +125,8 @@ export function useAuth() {
     profile,
     loading,
     signIn,
-    signUp,
     signOut,
+    signUp,
     resetPassword,
     updatePassword,
     updateProfile,

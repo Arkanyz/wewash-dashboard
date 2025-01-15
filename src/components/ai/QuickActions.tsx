@@ -7,7 +7,7 @@ interface QuickActionsProps {
 
 const QuickActions: React.FC<QuickActionsProps> = ({ onAction }) => {
   return (
-    <div className="flex flex-col gap-3 max-w-[340px]">
+    <div className="bg-[#286BD4] rounded-3xl h-full p-6 shadow-xl">
       {/* Tous les boutons d'action ont été supprimés */}
     </div>
   );

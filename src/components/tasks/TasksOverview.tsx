@@ -1,40 +1,33 @@
 import React from "react";
-import { IconPlus, IconClock, IconCheck, IconHourglass, IconChevronRight } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import { Button } from "../ui/button";
+import TasksList from "./TasksList";
 
 interface Task {
   id: number;
   title: string;
   location: string;
   description: string;
-  status: "urgent" | "normal";
-  date: string;
+  priority: "high" | "normal";
+  timeElapsed: string;
 }
 
 const tasks: Task[] = [
   {
     id: 1,
-    title: "Fuite centrale - Laverie Paris 11",
-    location: "Paris 11",
-    description: "Intervention d'urgence nécessaire pour réparer une fuite d'eau",
-    status: "urgent",
-    date: "15:54",
+    title: "Terminal de paiement bloqué",
+    location: "Paris 11ème - Machine #123",
+    description: "Le terminal ne répond plus aux transactions",
+    priority: "high",
+    timeElapsed: "2h 15min",
   },
   {
     id: 2,
-    title: "Maintenance préventive - Sèche-linge",
-    location: "Lyon",
-    description: "Inspection manuelle des électroniques",
-    status: "normal",
-    date: "Aujourd'hui",
-  },
-  {
-    id: 3,
-    title: "Panne système de paiement",
-    location: "Paris 15",
-    description: "Terminal de paiement hors service",
-    status: "normal",
-    date: "Aujourd'hui",
+    title: "Maintenance préventive",
+    location: "Lyon Centre - Machine #45",
+    description: "Vérification des filtres et courroies",
+    priority: "normal",
+    timeElapsed: "1h 45min",
   },
 ];
 
@@ -102,42 +95,12 @@ const TasksOverview = () => {
       </div>
 
       {/* Liste des tâches */}
-      <div className="space-y-3">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className="group flex items-center justify-between p-4 rounded-xl 
-                     bg-gray-50 dark:bg-[#1d1d1f] hover:bg-gray-100 dark:hover:bg-[#202022] 
-                     transition-colors duration-200"
-          >
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-3">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                  {task.title}
-                </h3>
-                {task.status === "urgent" && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                    Urgent
-                  </span>
-                )}
-              </div>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 truncate">
-                {task.description}
-              </p>
-            </div>
-            <div className="flex items-center space-x-4 ml-4">
-              <div className="text-right">
-                <div className="text-sm font-medium text-gray-900 dark:text-white">
-                  {task.location}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {task.date}
-                </div>
-              </div>
-              <IconChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
-            </div>
-          </div>
-        ))}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-medium">Tâches Prioritaires</h2>
+          <span className="text-sm text-gray-500">2 tâches</span>
+        </div>
+        <TasksList tasks={tasks} />
       </div>
     </div>
   );

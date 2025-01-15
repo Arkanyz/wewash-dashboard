@@ -1,24 +1,17 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Sidebar from "../components/navigation/Sidebar";
-import Header from "../components/header/Header";
+import React from 'react';
+import Navigation from '../components/navigation/Navigation';
+import { Outlet } from 'react-router-dom';
 
-const MainLayout = () => {
+interface MainLayoutProps {
+}
+
+const MainLayout: React.FC<MainLayoutProps> = () => {
   return (
-    <div className="flex h-screen bg-[#f5f5f7] dark:bg-[#1d1d1f]">
-      <Sidebar />
-      <div className="flex flex-1 flex-col">
-        <Header />
-        <div className="flex flex-1 overflow-hidden">
-          <main className="flex-1 p-8">
-            <div className="h-full rounded-2xl bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl shadow-sm">
-              <div className="h-full overflow-auto px-8 py-6">
-                <Outlet />
-              </div>
-            </div>
-          </main>
-        </div>
-      </div>
+    <div className="flex h-screen bg-[#F5F7FA]">
+      <Navigation />
+      <main className="flex-1 overflow-auto p-4 md:p-8 pt-24 md:pt-8">
+        <Outlet />
+      </main>
     </div>
   );
 };

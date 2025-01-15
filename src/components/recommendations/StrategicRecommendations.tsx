@@ -1,306 +1,284 @@
 import React, { useState } from 'react';
-import { Lightbulb, TrendingUp, ArrowRight, Calendar, ChartBar } from 'lucide-react';
-import Modal from '../ui/Modal';
-
-interface Impact {
-  metric: string;
-  value: string;
-  trend: 'positive' | 'negative';
-}
-
-interface Action {
-  type: 'schedule' | 'analyze';
-  label: string;
-  onClick: () => void;
-}
+import { ChevronRight, Wrench, TrendingUp, Users, MessageSquare } from 'lucide-react';
+import { useSupabase } from '@/providers/SupabaseProvider';
+import AllRecommendationsModal from './AllRecommendationsModal';
+import RecommendationDetailsModal from './RecommendationDetailsModal';
 
 interface Recommendation {
   id: string;
+  type: 'maintenance' | 'cost' | 'partnership' | 'customer';
+  priority: number;
   title: string;
   description: string;
-  type: 'operational' | 'strategic';
-  priority: 'high' | 'medium' | 'low';
-  location: string;
-  impacts: Impact[];
-  actions: Action[];
-  data: {
-    callsCount?: number;
-    timeFrame?: string;
-    savingsEstimate?: string;
-    revenueIncrease?: string;
+  impact: {
+    value: string;
+    type: 'positive' | 'negative';
   };
+  roi?: {
+    value: string;
+    type: 'positive' | 'negative';
+  };
+  action: string;
+  details: string;
+  steps: string[];
 }
 
 const StrategicRecommendations: React.FC = () => {
+  const [showAllRecommendations, setShowAllRecommendations] = useState(false);
   const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation | null>(null);
-  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const { supabase } = useSupabase();
 
-  // Données mockées (à remplacer par l'API)
+  // Simuler les données pour le moment
   const recommendations: Recommendation[] = [
     {
       id: '1',
-      title: 'Maintenance préventive requise',
-      description: 'Machine #5 à la laverie Lyon Centre a généré 12 appels ce mois-ci. Une maintenance préventive réduirait significativement les pannes.',
-      type: 'operational',
-      priority: 'high',
-      location: 'Lyon Centre',
-      impacts: [
-        { metric: 'Réduction des appels', value: '-20%', trend: 'positive' },
-        { metric: 'Satisfaction client', value: '+15%', trend: 'positive' }
-      ],
-      actions: [
-        { type: 'schedule', label: 'Planifier maintenance', onClick: () => console.log('Planifier') },
-        { type: 'analyze', label: 'Voir analyse détaillée', onClick: () => console.log('Analyser') }
-      ],
-      data: {
-        callsCount: 12,
-        timeFrame: '30 jours',
-        savingsEstimate: '450€/mois'
-      }
+      type: 'maintenance',
+      priority: 1,
+      title: 'Maintenance préventive recommandée',
+      description: 'Une maintenance préventive de vos machines pourrait prévenir des pannes futures.',
+      impact: {
+        value: '-25%',
+        type: 'positive'
+      },
+      roi: {
+        value: '+15%',
+        type: 'positive'
+      },
+      action: 'Planifier la maintenance',
+      details: 'La maintenance préventive régulière peut augmenter significativement la durée de vie de vos machines et réduire les coûts de réparation à long terme.',
+      steps: [
+        'Identifier les machines nécessitant une maintenance',
+        'Contacter notre équipe technique',
+        'Planifier une intervention à un moment optimal',
+        'Suivre les recommandations post-maintenance'
+      ]
     },
     {
       id: '2',
-      title: 'Opportunité d\'expansion',
-      description: 'La laverie Saint-Michel montre une forte demande. L\'ajout de machines supplémentaires augmenterait significativement les revenus.',
-      type: 'strategic',
-      priority: 'medium',
-      location: 'Paris Saint-Michel',
-      impacts: [
-        { metric: 'Revenus estimés', value: '+20%', trend: 'positive' },
-        { metric: 'ROI estimé', value: '6 mois', trend: 'positive' }
-      ],
-      actions: [
-        { type: 'analyze', label: 'Étude détaillée', onClick: () => console.log('Étudier') }
-      ],
-      data: {
-        timeFrame: '12 mois',
-        revenueIncrease: '2500€/mois'
-      }
+      type: 'cost',
+      priority: 2,
+      title: 'Optimisation des coûts possible',
+      description: 'Nous avons identifié des opportunités de réduction des coûts opérationnels.',
+      impact: {
+        value: '-15%',
+        type: 'positive'
+      },
+      roi: {
+        value: '+10%',
+        type: 'positive'
+      },
+      action: 'Voir le plan d\'optimisation',
+      details: 'Une analyse détaillée de vos opérations a révélé plusieurs domaines où des économies significatives peuvent être réalisées sans compromettre la qualité du service.',
+      steps: [
+        'Examiner le rapport détaillé',
+        'Sélectionner les mesures à mettre en place',
+        'Implémenter les changements progressivement',
+        'Suivre les résultats mensuellement'
+      ]
+    },
+    {
+      id: '3',
+      type: 'partnership',
+      priority: 2,
+      title: 'Partenariat Hôtel Mercure',
+      description: 'Opportunité de service blanchisserie',
+      impact: {
+        value: '+25%',
+        type: 'positive'
+      },
+      action: 'Contacter',
+      details: 'Un partenariat avec l\'hôtel Mercure pourrait augmenter vos revenus et améliorer votre visibilité.',
+      steps: [
+        'Contacter l\'hôtel Mercure',
+        'Discuter des détails du partenariat',
+        'Signer un accord de partenariat',
+        'Mettre en place le service de blanchisserie'
+      ]
+    },
+    {
+      id: '4',
+      type: 'customer',
+      priority: 2,
+      title: 'Amélioration Support Client',
+      description: '70% des appels : aide utilisation',
+      impact: {
+        value: '-45%',
+        type: 'positive'
+      },
+      action: 'Installer QR codes',
+      details: 'L\'amélioration du support client peut augmenter la satisfaction des clients et réduire les coûts de support.',
+      steps: [
+        'Identifier les domaines d\'amélioration',
+        'Créer des QR codes pour les instructions',
+        'Installer les QR codes',
+        'Suivre les résultats'
+      ]
     }
   ];
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high':
-        return 'bg-red-500/10 text-red-500 border-red-500/20';
-      case 'medium':
-        return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-      case 'low':
-        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+  const getIconForType = (type: string) => {
+    switch (type) {
+      case 'maintenance':
+        return <Wrench className="w-5 h-5" />;
+      case 'cost':
+        return <TrendingUp className="w-5 h-5" />;
+      case 'partnership':
+        return <Users className="w-5 h-5" />;
+      case 'customer':
+        return <MessageSquare className="w-5 h-5" />;
+      default:
+        return <TrendingUp className="w-5 h-5" />;
     }
   };
 
-  const getTypeIcon = (type: string) => {
+  const getBackgroundForType = (type: string) => {
     switch (type) {
-      case 'operational':
-        return <Lightbulb className="w-5 h-5 text-amber-500" />;
-      case 'strategic':
-        return <TrendingUp className="w-5 h-5 text-blue-500" />;
+      case 'maintenance':
+        return 'bg-orange-500/10 text-orange-500 border-orange-500/20';
+      case 'cost':
+        return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+      case 'partnership':
+        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      case 'customer':
+        return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
       default:
-        return null;
+        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
     }
   };
+
+  const handleRecommendationClick = (recommendation: Recommendation) => {
+    setSelectedRecommendation(recommendation);
+  };
+
+  // Filtrer les 2 recommandations prioritaires
+  const priorityRecommendations = recommendations
+    .sort((a, b) => a.priority - b.priority)
+    .slice(0, 2);
 
   return (
-    <div className="space-y-2">
-      {/* Recommandations opérationnelles */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-xl p-4 border border-white/10">
-        <div className="flex items-center gap-2 mb-3">
-          <Lightbulb className="w-4 h-4 text-amber-500" />
-          <h2 className="text-lg font-bold text-white">Optimisation Opérationnelle</h2>
+    <>
+      <div className="bg-white rounded-3xl p-4 md:p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
+          <div className="mb-3 md:mb-0">
+            <h2 className="text-lg md:text-xl font-semibold text-[#1a1a1a] mb-1">Recommandations Stratégiques</h2>
+            <p className="text-sm text-[#666666]">Basées sur vos données des 30 derniers jours</p>
+          </div>
+          <button
+            onClick={() => setShowAllRecommendations(true)}
+            className="flex items-center gap-2 text-sm text-[#286BD4] hover:text-[#1D5BB9] transition-colors w-full md:w-auto justify-center md:justify-start"
+          >
+            <span>Voir tout</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
 
-        <div className="space-y-2">
-          {recommendations
-            .filter(rec => rec.type === 'operational')
-            .map(recommendation => (
-              <div
-                key={recommendation.id}
-                className={"relative p-2 rounded-lg border " + getPriorityColor(recommendation.priority)}
-              >
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-white text-sm">{recommendation.title}</h3>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
-                      {recommendation.location}
-                    </span>
-                  </div>
-                  
-                  <p className="text-xs text-gray-400">{recommendation.description}</p>
-
-                  <div className="flex flex-wrap gap-3">
-                    {recommendation.impacts.map((impact, index) => (
-                      <div key={index} className="flex items-center gap-1">
-                        <span className={
-                          impact.trend === 'positive' ? 'text-green-500 text-xs' : 'text-red-500 text-xs'
-                        }>
-                          {impact.value}
-                        </span>
-                        <span className="text-xs text-gray-400">{impact.metric}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {recommendation.actions.map((action, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          setSelectedRecommendation(recommendation);
-                          if (action.type === 'analyze') {
-                            setShowAnalysisModal(true);
-                          }
-                        }}
-                        className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-xs text-white"
-                      >
-                        {action.type === 'schedule' ? (
-                          <Calendar className="w-3 h-3" />
-                        ) : (
-                          <ChartBar className="w-3 h-3" />
-                        )}
-                        {action.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+        <div className="bg-[#FAFBFF] border border-[#E5E9F2] rounded-2xl p-3 md:p-4 space-y-3 md:space-y-4">
+          {/* Première recommandation */}
+          <div 
+            onClick={() => handleRecommendationClick(priorityRecommendations[0])}
+            className="cursor-pointer transition-all duration-200 hover:bg-white hover:shadow-md rounded-xl p-3 md:p-4 -m-3 md:-m-4"
+          >
+            <div className="flex flex-col md:flex-row md:items-start gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-r from-[#286BD4] to-[#3B7BE9] self-start">
+                {getIconForType(priorityRecommendations[0].type)}
               </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Recommandations stratégiques */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-xl p-4 border border-white/10">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-4 h-4 text-blue-500" />
-          <h2 className="text-lg font-bold text-white">Optimisation Stratégique</h2>
-        </div>
-
-        <div className="space-y-2">
-          {recommendations
-            .filter(rec => rec.type === 'strategic')
-            .map(recommendation => (
-              <div
-                key={recommendation.id}
-                className={"relative p-2 rounded-lg border " + getPriorityColor(recommendation.priority)}
-              >
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-white text-sm">{recommendation.title}</h3>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
-                      {recommendation.location}
-                    </span>
-                  </div>
-                  
-                  <p className="text-xs text-gray-400">{recommendation.description}</p>
-
-                  <div className="flex flex-wrap gap-3">
-                    {recommendation.impacts.map((impact, index) => (
-                      <div key={index} className="flex items-center gap-1">
-                        <span className={
-                          impact.trend === 'positive' ? 'text-green-500 text-xs' : 'text-red-500 text-xs'
-                        }>
-                          {impact.value}
-                        </span>
-                        <span className="text-xs text-gray-400">{impact.metric}</span>
-                      </div>
-                    ))}
+              <div className="flex-grow">
+                <h3 className="text-base font-medium text-[#1a1a1a]">{priorityRecommendations[0].title}</h3>
+                <p className="text-sm text-[#666666] mt-1 mb-3">{priorityRecommendations[0].description}</p>
+                
+                <div className="grid grid-cols-2 gap-2 md:gap-3">
+                  <div className="bg-white rounded-xl p-2 md:p-3 border border-[#E5E9F2]">
+                    <div className="flex items-center gap-2 mb-1 md:mb-2">
+                      <div className="w-2 h-2 rounded-full bg-[#38AF2E]"></div>
+                      <span className="text-xs md:text-sm font-medium text-[#1a1a1a]">Impact</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-base md:text-lg font-semibold text-[#38AF2E]">{priorityRecommendations[0].impact.value}</span>
+                      <span className="text-xs text-[#666666]">d'appels</span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    {recommendation.actions.map((action, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          setSelectedRecommendation(recommendation);
-                          if (action.type === 'analyze') {
-                            setShowAnalysisModal(true);
-                          }
-                        }}
-                        className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-xs text-white"
-                      >
-                        <ChartBar className="w-3 h-3" />
-                        {action.label}
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    ))}
+                  <div className="bg-white rounded-xl p-2 md:p-3 border border-[#E5E9F2]">
+                    <div className="flex items-center gap-2 mb-1 md:mb-2">
+                      <div className="w-2 h-2 rounded-full bg-[#286BD4]"></div>
+                      <span className="text-xs md:text-sm font-medium text-[#1a1a1a]">ROI</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-base md:text-lg font-semibold text-[#286BD4]">{priorityRecommendations[0].roi?.value}</span>
+                      <span className="text-xs text-[#666666]">économies</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Modal d'analyse détaillée */}
-      <Modal
-        isOpen={showAnalysisModal}
-        onClose={() => setShowAnalysisModal(false)}
-        title="Analyse détaillée"
-      >
-        {selectedRecommendation && (
-          <div className="space-y-6">
-            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                {selectedRecommendation.title}
-              </h3>
-              <p className="text-sm text-gray-500 mt-2">
-                {selectedRecommendation.description}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {selectedRecommendation.data.callsCount && (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-500">Appels générés</p>
-                  <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">
-                    {selectedRecommendation.data.callsCount}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    sur {selectedRecommendation.data.timeFrame}
-                  </p>
-                </div>
-              )}
-
-              {selectedRecommendation.data.savingsEstimate && (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-500">Économies estimées</p>
-                  <p className="text-xl font-bold text-green-500 mt-1">
-                    {selectedRecommendation.data.savingsEstimate}
-                  </p>
-                </div>
-              )}
-
-              {selectedRecommendation.data.revenueIncrease && (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-500">Augmentation des revenus</p>
-                  <p className="text-xl font-bold text-green-500 mt-1">
-                    {selectedRecommendation.data.revenueIncrease}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">Impacts attendus</h4>
-              <div className="space-y-2">
-                {selectedRecommendation.impacts.map((impact, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                  >
-                    <span className="text-gray-700 dark:text-gray-300">{impact.metric}</span>
-                    <span className={
-                      impact.trend === 'positive' ? 'text-green-500' : 'text-red-500'
-                    }>
-                      {impact.value}
-                    </span>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
-        )}
-      </Modal>
-    </div>
+
+          {/* Deuxième recommandation */}
+          <div 
+            onClick={() => handleRecommendationClick(priorityRecommendations[1])}
+            className="cursor-pointer transition-all duration-200 hover:bg-white hover:shadow-md rounded-xl p-3 md:p-4 -m-3 md:-m-4 mt-0"
+          >
+            <div className="pt-3 md:pt-4 border-t border-[#E5E9F2]">
+              <div className="flex flex-col md:flex-row md:items-start gap-3">
+                <div className="p-2 rounded-xl bg-gradient-to-r from-[#38AF2E] to-[#4CC924] self-start">
+                  {getIconForType(priorityRecommendations[1].type)}
+                </div>
+                <div className="flex-grow">
+                  <h3 className="text-base font-medium text-[#1a1a1a]">{priorityRecommendations[1].title}</h3>
+                  <p className="text-sm text-[#666666] mt-1 mb-3">{priorityRecommendations[1].description}</p>
+                  
+                  <div className="grid grid-cols-2 gap-2 md:gap-3">
+                    <div className="bg-white rounded-xl p-2 md:p-3 border border-[#E5E9F2]">
+                      <div className="flex items-center gap-2 mb-1 md:mb-2">
+                        <div className="w-2 h-2 rounded-full bg-[#38AF2E]"></div>
+                        <span className="text-xs md:text-sm font-medium text-[#1a1a1a]">Impact</span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-base md:text-lg font-semibold text-[#38AF2E]">{priorityRecommendations[1].impact.value}</span>
+                        <span className="text-xs text-[#666666]">coûts</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-2 md:p-3 border border-[#E5E9F2]">
+                      <div className="flex items-center gap-2 mb-1 md:mb-2">
+                        <div className="w-2 h-2 rounded-full bg-[#286BD4]"></div>
+                        <span className="text-xs md:text-sm font-medium text-[#1a1a1a]">ROI</span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-base md:text-lg font-semibold text-[#286BD4]">{priorityRecommendations[1].roi?.value}</span>
+                        <span className="text-xs text-[#666666]">retour</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => setShowAllRecommendations(true)}
+            className="w-full mt-3 px-3 md:px-4 py-2 bg-white border border-[#E5E9F2] rounded-xl text-xs md:text-sm text-[#286BD4] hover:bg-[#F5F7FA] transition-colors flex items-center justify-center gap-2"
+          >
+            <span>Voir toutes les recommandations</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18 6 15 3 18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <AllRecommendationsModal
+        isOpen={showAllRecommendations}
+        onClose={() => setShowAllRecommendations(false)}
+        recommendations={recommendations}
+      />
+
+      <RecommendationDetailsModal
+        isOpen={selectedRecommendation !== null}
+        onClose={() => setSelectedRecommendation(null)}
+        recommendation={selectedRecommendation}
+      />
+    </>
   );
 };
 
