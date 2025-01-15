@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import WeLineWidget from '../components/weline/WeLineWidget';
-import ActiveIncidents from '../components/incidents/ActiveIncidents';
-import StrategicRecommendations from '../components/recommendations/StrategicRecommendations';
-import AIAssistant from '../components/ai/AIAssistant';
-import TasksList from '../components/tasks/TasksList';
-import Modal from '../components/ui/Modal';
-import CloseButton from '@/components/ui/close-button';
+import WeLineWidget from '../../components/weline/WeLineWidget';
+import ActiveIncidents from '../../components/incidents/ActiveIncidents';
+import StrategicRecommendations from '../../components/recommendations/StrategicRecommendations';
+import AIAssistant from '../../components/ai/AIAssistant';
+import TasksList from '../../components/tasks/TasksList';
+import Modal from '../../components/ui/Modal';
+import CloseButton from '../../components/ui/close-button';
 import { ResponsiveLine } from '@nivo/line';
-import { DashboardStats } from '@/components/dashboard/DashboardStats';
+import { DashboardStats } from '../../components/dashboard/DashboardStats';
 import { 
   Trash2, 
   AlertCircle, 
