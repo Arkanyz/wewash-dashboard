@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+export default {
   reactStrictMode: true,
   swcMinify: true,
   experimental: {
@@ -10,5 +10,3 @@ const nextConfig = {
     return config;
   },
 };
-
-export default nextConfig;
