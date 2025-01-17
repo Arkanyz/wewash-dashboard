@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '../../lib/supabaseClient';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { AlertCircle, Plus, Send } from 'lucide-react';

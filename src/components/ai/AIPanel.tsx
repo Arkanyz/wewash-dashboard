@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import FluidAnimation from './FluidAnimation';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { ScrollArea } from "../ui/scroll-area";
 import { useSupabase } from '@/providers/SupabaseProvider';
 import { Send, Mic } from 'lucide-react';
 

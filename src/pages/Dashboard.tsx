@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import WeLineWidget from '../components/weline/WeLineWidget';
 import ActiveIncidents from '../components/incidents/ActiveIncidents';
 import StrategicRecommendations from '../components/recommendations/StrategicRecommendations';
 import AIAssistant from '../components/ai/AIAssistant';
 import TasksList from '../components/tasks/TasksList';
 import Modal from '../components/ui/Modal';
-import CloseButton from '@/components/ui/close-button';
+import CloseButton from '../components/ui/close-button';
 import { ResponsiveLine } from '@nivo/line';
-import { DashboardStats } from '@/components/dashboard/DashboardStats';
+import { DashboardStats } from '../components/dashboard/DashboardStats';
 import { 
   Trash2, 
   AlertCircle, 
@@ -148,98 +147,7 @@ const Dashboard: React.FC = () => {
 
   const activeIncidents = getRecentUnresolvedIncidents(incidents);
 
-  // Données des statistiques
-  const statsData = {
-    'vapi-calls': {
-      title: 'Appels VAPI (24h)',
-      value: '156',
-      change: '+12%',
-      changeType: 'positive',
-      details: [
-        { period: '0-6h', value: '32' },
-        { period: '6-12h', value: '45' },
-        { period: '12-18h', value: '48' },
-        { period: '18-24h', value: '31' }
-      ]
-    },
-    'resolution-rate': {
-      title: 'Taux de résolution',
-      value: '92%',
-      change: '+5%',
-      changeType: 'positive',
-      details: [
-        { period: 'Aujourd\'hui', value: '92%' },
-        { period: 'Cette semaine', value: '89%' },
-        { period: 'Ce mois', value: '87%' }
-      ]
-    },
-    'average-time': {
-      title: 'Temps moyen',
-      value: '2h 15min',
-      change: '+15min',
-      changeType: 'negative',
-      details: [
-        { period: 'Aujourd\'hui', value: '2h 15min' },
-        { period: 'Cette semaine', value: '2h 05min' },
-        { period: 'Ce mois', value: '2h 30min' }
-      ]
-    },
-    'active-machines': {
-      title: 'Machines actives',
-      value: '245/280',
-      change: '87%',
-      changeType: 'positive',
-      details: [
-        { period: 'En maintenance', value: '15' },
-        { period: 'En panne', value: '20' },
-        { period: 'En service', value: '245' }
-      ]
-    }
-  };
-
-  // Données horaires améliorées
-  const generateHourlyData = () => {
-    return Array.from({ length: 24 }, (_, hour) => ({
-      x: `${hour}h`,
-      y: Math.floor(Math.random() * 20) + 1
-    }));
-  };
-
-  const [hourlyData, setHourlyData] = useState(generateHourlyData());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHourlyData(generateHourlyData());
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Style personnalisé pour le graphique
-  const bubbleChartTheme = {
-    background: 'transparent',
-    fontFamily: 'Inter, sans-serif',
-    fontSize: 11,
-    textColor: '#286BD4',
-    tooltip: {
-      container: {
-        background: '#F9F9F9',
-        fontSize: '12px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        padding: '12px 16px',
-      }
-    },
-    labels: {
-      text: {
-        fontSize: 12,
-        fill: '#286BD4',
-        fontWeight: 600
-      }
-    }
-  };
-
-  // Ajout de l'interface pour les tâches
+  // Données des tâches
   interface Task {
     id: string;
     title: string;
@@ -324,7 +232,7 @@ const Dashboard: React.FC = () => {
             <span>
               {task.urgencyLevel === 'high' 
                 ? 'Urgent' 
-                : task.urgencyLevel === 'medium' 
+                : task.urgencyLevel === 'medium'
                 ? 'Modéré' 
                 : 'Normal'}
             </span>
@@ -641,29 +549,7 @@ const Dashboard: React.FC = () => {
       <div className="h-full p-4">
         <div className="h-full max-w-[1800px] mx-auto grid grid-rows-[auto_1fr_1fr] gap-3">
           <DashboardStats className="mb-8" />
-          {/* Indicateurs clés - hauteur automatique */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {Object.entries(statsData).map(([key, stat]) => (
-              <div
-                key={key}
-                className="bg-white rounded-2xl p-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => setSelectedStat(key)}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-[#121212] font-medium text-sm">{stat.title}</p>
-                    <h3 className="text-xl font-semibold text-[#286BD4] mt-1">{stat.value}</h3>
-                  </div>
-                  <div className={`px-2 py-1 rounded-full text-sm ${
-                    stat.changeType === 'positive' ? 'bg-[#DAF4D8] text-[#38AF2E]' : 'bg-[#FED6D6] text-[#FF6666]'
-                  }`}>
-                    {stat.change}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
+          
           {/* Ligne du milieu - tâches et incidents */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {/* Tâches & Actions préventives */}

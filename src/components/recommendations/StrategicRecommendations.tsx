@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { ChevronRight, Wrench, TrendingUp, Users, MessageSquare } from 'lucide-react';
-import { useSupabase } from '@/providers/SupabaseProvider';
-import AllRecommendationsModal from './AllRecommendationsModal';
-import RecommendationDetailsModal from './RecommendationDetailsModal';
+import React, { useState } from "react";
+import { ChevronRight, Wrench, TrendingUp, Users, MessageSquare } from "lucide-react";
+import { useSupabase } from "../../providers/SupabaseProvider";
+import AllRecommendationsModal from "./AllRecommendationsModal";
+import RecommendationDetailsModal from "./RecommendationDetailsModal";
 
 interface Recommendation {
   id: string;

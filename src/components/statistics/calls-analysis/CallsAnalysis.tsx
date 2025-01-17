@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Phone, CheckCircle, Clock, BarChart3, Calendar, Loader2, AlertTriangle } from 'lucide-react';
-import { statisticsService, type CallStatistics } from '@/services/statisticsService';
-import { DataState } from '@/components/ui/data-state';
-import { Card } from '@/components/ui/card';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Phone, CheckCircle, Clock, BarChart3, Calendar, Loader2, AlertTriangle } from "lucide-react";
+import { statisticsService, type CallStatistics } from "../../../services/statisticsService";
+import { DataState } from "../../ui/data-state";
+import { Card } from "../../ui/card";
 import {
   BarChart,
   Bar,

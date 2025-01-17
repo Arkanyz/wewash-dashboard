@@ -1,6 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { logService } from './logService';
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '../lib/supabaseClient';
 
 interface WeWashDBSchema extends DBSchema {
   pending_operations: {

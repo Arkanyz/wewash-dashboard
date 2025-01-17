@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '../lib/supabaseClient';
 
 type LogLevel = 'info' | 'warning' | 'error' | 'debug';
 type LogCategory = 'auth' | 'data' | 'performance' | 'security' | 'user_action';

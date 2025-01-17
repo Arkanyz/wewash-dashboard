@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 
 const VAPI_PUBLIC_KEY = '0f5c8b0d-b101-4e81-b9aa-2b4b2e0f7026';
 const VAPI_PRIVATE_KEY = '56d5baaa-aeea-49ef-b28b-360edd3208ce';

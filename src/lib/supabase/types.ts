@@ -100,9 +100,19 @@ export interface Database {
         Row: {
           id: string
           machine_id: string
-          type: 'information' | 'problem' | 'maintenance' | 'payment' | 'other'
+          category: 'technical_issue' | 'payment_issue' | 'user_experience' | 'environmental' | 'general_inquiry' | 'other'
+          subcategory: 'machine_blocked' | 'electrical_failure' | 'heating_issue' | 'mechanical_damage' | 'drying_issue' | 
+                      'payment_rejected' | 'terminal_down' | 'credit_not_applied' | 'long_wait' | 'poor_quality' | 
+                      'display_issue' | 'temperature_issue' | 'noise_issue' | 'hygiene_issue' | 'opening_hours' | 
+                      'location_info' | 'machine_usage' | 'lost_item' | 'security_incident' | 'other'
+          priority: 'low' | 'medium' | 'high' | 'critical'
           description: string | null
           status: 'pending' | 'in_progress' | 'resolved' | 'cancelled'
+          requires_technician: boolean
+          requires_immediate: boolean
+          client_info: Json
+          analysis: Json
+          actions_taken: Json[]
           created_at: string
           resolved_at: string | null
           created_by: string | null
@@ -111,9 +121,19 @@ export interface Database {
         Insert: {
           id?: string
           machine_id: string
-          type: 'information' | 'problem' | 'maintenance' | 'payment' | 'other'
+          category: 'technical_issue' | 'payment_issue' | 'user_experience' | 'environmental' | 'general_inquiry' | 'other'
+          subcategory: 'machine_blocked' | 'electrical_failure' | 'heating_issue' | 'mechanical_damage' | 'drying_issue' | 
+                      'payment_rejected' | 'terminal_down' | 'credit_not_applied' | 'long_wait' | 'poor_quality' | 
+                      'display_issue' | 'temperature_issue' | 'noise_issue' | 'hygiene_issue' | 'opening_hours' | 
+                      'location_info' | 'machine_usage' | 'lost_item' | 'security_incident' | 'other'
+          priority?: 'low' | 'medium' | 'high' | 'critical'
           description?: string | null
           status?: 'pending' | 'in_progress' | 'resolved' | 'cancelled'
+          requires_technician?: boolean
+          requires_immediate?: boolean
+          client_info?: Json
+          analysis?: Json
+          actions_taken?: Json[]
           created_at?: string
           resolved_at?: string | null
           created_by?: string | null
@@ -122,9 +142,19 @@ export interface Database {
         Update: {
           id?: string
           machine_id?: string
-          type?: 'information' | 'problem' | 'maintenance' | 'payment' | 'other'
+          category?: 'technical_issue' | 'payment_issue' | 'user_experience' | 'environmental' | 'general_inquiry' | 'other'
+          subcategory?: 'machine_blocked' | 'electrical_failure' | 'heating_issue' | 'mechanical_damage' | 'drying_issue' | 
+                       'payment_rejected' | 'terminal_down' | 'credit_not_applied' | 'long_wait' | 'poor_quality' | 
+                       'display_issue' | 'temperature_issue' | 'noise_issue' | 'hygiene_issue' | 'opening_hours' | 
+                       'location_info' | 'machine_usage' | 'lost_item' | 'security_incident' | 'other'
+          priority?: 'low' | 'medium' | 'high' | 'critical'
           description?: string | null
           status?: 'pending' | 'in_progress' | 'resolved' | 'cancelled'
+          requires_technician?: boolean
+          requires_immediate?: boolean
+          client_info?: Json
+          analysis?: Json
+          actions_taken?: Json[]
           created_at?: string
           resolved_at?: string | null
           created_by?: string | null

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { Button } from "../ui/button";
 
 interface QuickActionsProps {
   onAction: (action: string) => void;

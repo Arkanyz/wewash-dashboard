@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { vapiService } from '../services/vapiService';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 
 export const useVAPI = (machineId?: string) => {
   const [loading, setLoading] = useState(false);

@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '../lib/supabaseClient';
 import { useAppStore } from '../stores/useAppStore';
 
 class SyncService {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Settings, Trash2, AlertCircle, CheckCircle, Clock, X, MapPin, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '../lib/supabaseClient';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import AddLaundryModal from '../components/laundries/AddLaundryModal';

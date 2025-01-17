@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase/client';
-import type { Profile } from '../lib/supabase/client';
+import { supabase } from '../lib/supabaseClient';
+import type { Profile } from '../lib/types';
 
 export function useAuth() {
   const [user, setUser] = useState(supabase.auth.getUser());

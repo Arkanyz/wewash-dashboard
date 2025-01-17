@@ -15,8 +15,8 @@ import {
   Minus,
   User
 } from 'lucide-react';
-import { supabase } from '../lib/supabase/client';
-import type { Database } from '../lib/supabase/types';
+import { supabase } from '../lib/supabaseClient';
+import type { Database } from '../lib/types';
 
 type Technician = Database['public']['Tables']['technicians']['Row'];
 

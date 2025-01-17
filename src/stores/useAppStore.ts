@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Profile, Laundry, Machine, Intervention, Task, Notification } from '../lib/supabase/client';
+import type { Profile, Laundry, Machine, Intervention, Task, Notification } from '../lib/types';
 
 interface AppState {
   // États existants

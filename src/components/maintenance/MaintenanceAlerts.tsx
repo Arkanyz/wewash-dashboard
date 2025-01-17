@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Clock, Wrench, CheckCircle } from 'lucide-react';
-import { supabase } from '../../lib/supabase/client';
+import { supabase } from '../../lib/supabaseClient';
 import type { MaintenanceAlert, MaintenanceEvent } from '../../types/maintenance';
 
 interface MaintenanceAlertsProps {

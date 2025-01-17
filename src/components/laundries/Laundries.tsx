@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
-import { useSupabase } from '../../providers/SupabaseProvider';
+import { supabase } from '../../lib/supabaseClient';
 import AddLaundryModal from './AddLaundryModal';
 
 interface Laundry {
@@ -24,7 +24,6 @@ const Laundries: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newLaundry, setNewLaundry] = useState({ name: '', address: '', city: '', postal_code: '', contact_name: '', phone: '', email: '' });
-  const { supabase } = useSupabase();
 
   useEffect(() => {
     fetchLaundries();

@@ -1,5 +1,6 @@
-import React from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { jsxDEV } from "react/jsx-dev-runtime";
+import React from "react";
+import { supabase } from "../../lib/supabaseClient";
 
 interface StatisticsHeaderProps {
   className?: string;
