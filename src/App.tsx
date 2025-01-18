@@ -50,18 +50,18 @@ function App() {
                 <Route path="/complete-profile" element={<CompleteProfile />} />
 
                 {/* Routes protégées */}
-                <Route path="/dashboard" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="laundries" element={<Laundries />} />
-                  <Route path="technicians" element={<Technicians />} />
-                  <Route path="analytics" element={<Analytics />} />
-                  <Route path="statistics" element={<Statistics />} />
-                  <Route path="settings" element={<Settings />} />
-                  <Route path="support" element={<Support />} />
+                <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/laundries" element={<Laundries />} />
+                  <Route path="/technicians" element={<Technicians />} />
+                  <Route path="/statistics" element={<Statistics />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/support" element={<Support />} />
                 </Route>
 
-                {/* Redirection par défaut vers welcome */}
-                <Route path="*" element={<Navigate to="/welcome" replace />} />
+                {/* Redirection par défaut */}
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </Suspense>
           </Router>

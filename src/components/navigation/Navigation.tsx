@@ -23,31 +23,31 @@ const Navigation: React.FC = () => {
       description: "Vue principale et statistiques"
     },
     {
-      path: "/dashboard/laundries",
+      path: "/laundries",
       icon: Building2,
       label: "Laveries",
       description: "Gestion des laveries"
     },
     {
-      path: "/dashboard/technicians",
+      path: "/technicians",
       icon: Wrench,
       label: "Techniciens",
       description: "Gestion des interventions"
     },
     {
-      path: "/dashboard/statistics",
+      path: "/statistics",
       icon: BarChart3,
       label: "Statistiques & Analyses",
       description: "Analyse détaillée des appels"
     },
     {
-      path: "/dashboard/settings",
+      path: "/settings",
       icon: Settings,
       label: "Paramètres",
       description: "Configuration système"
     },
     {
-      path: "/dashboard/support",
+      path: "/support",
       icon: HelpCircle,
       label: "Support",
       description: "Aide et assistance"
