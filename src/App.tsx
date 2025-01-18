@@ -1,8 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './providers/theme-provider';
-import { MantineProvider } from './providers/mantine-provider';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Composant de chargement
@@ -31,43 +28,37 @@ const Statistics = lazy(() => import('./pages/Statistics'));
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" enableSystem>
-      <MantineProvider>
-        <AuthProvider>
-          <Router>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Landing Page */}
-                <Route path="/" element={<Navigate to="/welcome" replace />} />
-                <Route path="/welcome" element={<Login />} />
+    <Router>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          {/* Landing Page */}
+          <Route path="/" element={<Navigate to="/welcome" replace />} />
+          <Route path="/welcome" element={<Login />} />
 
-                {/* Routes publiques */}
-                <Route path="/login" element={<Navigate to="/welcome" replace />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/complete-profile" element={<CompleteProfile />} />
+          {/* Routes publiques */}
+          <Route path="/login" element={<Navigate to="/welcome" replace />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
 
-                {/* Routes protégées */}
-                <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/laundries" element={<Laundries />} />
-                  <Route path="/technicians" element={<Technicians />} />
-                  <Route path="/statistics" element={<Statistics />} />
-                  <Route path="/analytics" element={<Analytics />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/support" element={<Support />} />
-                </Route>
+          {/* Routes protégées */}
+          <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/laundries" element={<Laundries />} />
+            <Route path="/technicians" element={<Technicians />} />
+            <Route path="/statistics" element={<Statistics />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/support" element={<Support />} />
+          </Route>
 
-                {/* Redirection par défaut */}
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </Suspense>
-          </Router>
-        </AuthProvider>
-      </MantineProvider>
-    </ThemeProvider>
+          {/* Redirection par défaut */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Suspense>
+    </Router>
   );
 }
 

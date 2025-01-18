@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { SupabaseProvider } from './providers/SupabaseProvider';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './providers/theme-provider';
+import { MantineProvider } from './providers/mantine-provider';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
@@ -13,7 +16,13 @@ const Main = () => {
   return (
     <React.StrictMode>
       <SupabaseProvider>
-        <App />
+        <AuthProvider>
+          <ThemeProvider defaultTheme="system" enableSystem>
+            <MantineProvider>
+              <App />
+            </MantineProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </SupabaseProvider>
     </React.StrictMode>
   );
