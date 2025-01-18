@@ -21,7 +21,11 @@ export default defineConfig({
       manifest: {
         name: 'WeWash Dashboard',
         short_name: 'WeWash',
-        theme_color: '#ffffff',
+        description: 'Tableau de bord de gestion pour WeWash',
+        theme_color: '#0284c7',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           {
             src: '/android-chrome-192x192.png',
@@ -32,6 +36,25 @@ export default defineConfig({
             src: '/android-chrome-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 jours
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           }
         ]
       }
@@ -46,21 +69,27 @@ export default defineConfig({
       brotliSize: true
     })
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   build: {
     target: 'esnext',
     minify: 'terser',
-    cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'react-vendor';
-            if (id.includes('@mantine')) return 'mantine-vendor';
-            if (id.includes('lucide-react') || id.includes('@radix-ui')) return 'ui-vendor';
-            if (id.includes('recharts') || id.includes('@tremor')) return 'chart-vendor';
-            return 'vendor';
-          }
-        }
+        manualChunks: {
+          vendor: [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            '@mantine/core',
+            '@mantine/hooks',
+            '@mantine/notifications',
+            'framer-motion'
+          ],
+        },
       }
     },
     terserOptions: {
@@ -70,20 +99,9 @@ export default defineConfig({
       }
     }
   },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  },
   server: {
-    hmr: {
-      overlay: false
-    },
-    watch: {
-      usePolling: true
-    }
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom']
+    port: 5173,
+    strictPort: true,
+    host: true
   }
 })
