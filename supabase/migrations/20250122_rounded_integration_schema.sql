@@ -16,10 +16,14 @@ END $$;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Enum types for better data consistency
-CREATE TYPE call_status AS ENUM ('initiated', 'connected', 'completed', 'missed', 'failed');
-CREATE TYPE call_direction AS ENUM ('inbound', 'outbound');
-CREATE TYPE variable_type AS ENUM ('string', 'boolean', 'number', 'date');
-CREATE TYPE variable_source AS ENUM ('api_call', 'csv', 'extracted');
+DO $$ BEGIN
+    CREATE TYPE call_status AS ENUM ('initiated', 'connected', 'completed', 'missed', 'failed');
+    CREATE TYPE call_direction AS ENUM ('inbound', 'outbound');
+    CREATE TYPE variable_type AS ENUM ('string', 'boolean', 'number', 'date');
+    CREATE TYPE variable_source AS ENUM ('api_call', 'csv', 'extracted');
+EXCEPTION 
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Table: rounded_calls
 -- Stores main call information
@@ -97,46 +101,6 @@ CREATE INDEX IF NOT EXISTS idx_rounded_segments_call ON rounded_call_segments(ca
 CREATE INDEX IF NOT EXISTS idx_rounded_variables_call ON rounded_variables(call_id);
 CREATE INDEX IF NOT EXISTS idx_rounded_tools_call ON rounded_tools_usage(call_id);
 
--- Add RLS (Row Level Security) policies
-ALTER TABLE rounded_calls ENABLE ROW LEVEL SECURITY;
-ALTER TABLE rounded_call_segments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE rounded_variables ENABLE ROW LEVEL SECURITY;
-ALTER TABLE rounded_tools_usage ENABLE ROW LEVEL SECURITY;
-
--- Policy: Users can view their own calls and related data
-CREATE POLICY "Users can view own rounded calls"
-    ON rounded_calls FOR SELECT
-    USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users can view own rounded segments"
-    ON rounded_call_segments FOR SELECT
-    USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users can view own rounded variables"
-    ON rounded_variables FOR SELECT
-    USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users can view own rounded tools usage"
-    ON rounded_tools_usage FOR SELECT
-    USING (auth.uid() = owner_id);
-
--- Policy: Edge functions can insert data
-CREATE POLICY "Edge functions can insert rounded calls"
-    ON rounded_calls FOR INSERT
-    WITH CHECK (true);
-
-CREATE POLICY "Edge functions can insert rounded segments"
-    ON rounded_call_segments FOR INSERT
-    WITH CHECK (true);
-
-CREATE POLICY "Edge functions can insert rounded variables"
-    ON rounded_variables FOR INSERT
-    WITH CHECK (true);
-
-CREATE POLICY "Edge functions can insert rounded tools usage"
-    ON rounded_tools_usage FOR INSERT
-    WITH CHECK (true);
-
 -- Function: Update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -158,66 +122,31 @@ CREATE OR REPLACE FUNCTION get_rounded_call_stats(
     p_start_date TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     p_end_date TIMESTAMP WITH TIME ZONE DEFAULT NULL
 )
-RETURNS JSONB
+RETURNS TABLE (
+    total_calls BIGINT,
+    completed_calls BIGINT,
+    missed_calls BIGINT,
+    avg_duration INTEGER,
+    most_common_intent TEXT
+)
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
-DECLARE
-    result JSONB;
 BEGIN
+    RETURN QUERY
     WITH filtered_calls AS (
         SELECT *
         FROM rounded_calls
         WHERE (p_laundry_id IS NULL OR laundry_id = p_laundry_id)
         AND (p_start_date IS NULL OR created_at >= p_start_date)
         AND (p_end_date IS NULL OR created_at <= p_end_date)
-    ),
-    daily_stats AS (
-        SELECT 
-            DATE_TRUNC('day', created_at) AS date,
-            COUNT(*) AS total_calls,
-            COUNT(*) FILTER (WHERE status = 'completed') AS completed_calls,
-            COUNT(*) FILTER (WHERE status = 'missed') AS missed_calls,
-            AVG(CASE WHEN status = 'completed' THEN duration ELSE NULL END)::INTEGER AS avg_duration
-        FROM filtered_calls
-        GROUP BY DATE_TRUNC('day', created_at)
-        ORDER BY date DESC
-        LIMIT 30
-    ),
-    overall_stats AS (
-        SELECT
-            COUNT(*) AS total_calls,
-            COUNT(*) FILTER (WHERE status = 'completed') AS completed_calls,
-            COUNT(*) FILTER (WHERE status = 'missed') AS missed_calls,
-            AVG(CASE WHEN status = 'completed' THEN duration ELSE NULL END)::INTEGER AS avg_duration,
-            MODE() WITHIN GROUP (ORDER BY intent) AS most_common_intent
-        FROM filtered_calls
     )
-    SELECT jsonb_build_object(
-        'overall', (
-            SELECT jsonb_build_object(
-                'total_calls', total_calls,
-                'completed_calls', completed_calls,
-                'missed_calls', missed_calls,
-                'avg_duration', avg_duration,
-                'most_common_intent', most_common_intent
-            )
-            FROM overall_stats
-        ),
-        'daily_stats', (
-            SELECT jsonb_agg(
-                jsonb_build_object(
-                    'date', date,
-                    'total_calls', total_calls,
-                    'completed_calls', completed_calls,
-                    'missed_calls', missed_calls,
-                    'avg_duration', avg_duration
-                )
-            )
-            FROM daily_stats
-        )
-    ) INTO result;
-
-    RETURN result;
+    SELECT
+        COUNT(*)::BIGINT AS total_calls,
+        COUNT(*) FILTER (WHERE status = 'completed')::BIGINT AS completed_calls,
+        COUNT(*) FILTER (WHERE status = 'missed')::BIGINT AS missed_calls,
+        AVG(CASE WHEN status = 'completed' THEN duration ELSE NULL END)::INTEGER AS avg_duration,
+        MODE() WITHIN GROUP (ORDER BY intent) AS most_common_intent
+    FROM filtered_calls;
 END;
 $$;
