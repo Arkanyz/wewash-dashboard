@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Settings, Trash2, AlertCircle, CheckCircle, Clock, X, MapPin, ChevronRight } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
+import { useRouter } from 'next/router';
+import { useSession } from '@supabase/auth-helpers-react';
+import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { Database } from '../types/supabase';
+import AddLaundryModal from '../components/laundries/AddLaundryModal/index';
+import { Settings, Trash2, AlertCircle, CheckCircle, Clock, X, MapPin, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import AddLaundryModal from '../components/laundries/AddLaundryModal';
 import AddMachineModal, { MachineData } from '../components/machines/AddMachineModal';
 import type { LaundryData } from '../components/laundries/AddLaundryModal';
 import ErrorModal from '../components/modals/ErrorModal';
+import toast from '../lib/toast';
 
 interface Machine {
   id: string;
@@ -139,52 +145,54 @@ const Laundries: React.FC = () => {
     }
   };
 
-  const handleAddLaundry = async (laundryData: LaundryData) => {
+  const handleAddLaundry = async (formData: FormData) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        alert('Vous devez être connecté pour ajouter une laverie');
-        return;
+        throw new Error('Vous devez être connecté pour ajouter une laverie');
       }
 
-      // Créer l'objet à insérer avec les noms exacts des colonnes
-      const newLaundry = {
-        name: laundryData.name,
-        address: laundryData.address,
-        ville: laundryData.city,
-        code_postal: laundryData.postal_code,
-        owner_id: user.id
-      };
+      // Ajout du user ID dans les headers pour l'API
+      const response = await fetch('/api/laundries/import-prices', {
+        method: 'POST',
+        headers: {
+          'x-user-id': user.id,
+        },
+        body: formData
+      });
 
-      console.log('Tentative d\'ajout de laverie avec les données:', newLaundry);
-
-      const { data, error } = await supabase
-        .from('laundries')
-        .insert(newLaundry)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Erreur Supabase:', error);
-        throw new Error(error.message);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la création de la laverie');
       }
 
-      if (!data) {
-        throw new Error('Aucune donnée retournée après l\'insertion');
-      }
-
-      console.log('Laverie ajoutée avec succès:', data);
+      const { data } = await response.json();
 
       // Ajouter la nouvelle laverie à l'état local
       setLaundries(prev => [...prev, { ...data, machines: [] }]);
       setIsAddModalOpen(false);
       
-      // Recharger les données pour être sûr d'avoir les dernières informations
+      // Recharger les données
       fetchLaundries();
+
+      // Afficher un message de succès
+      toast({
+        title: "Laverie créée avec succès !",
+        description: "Les tarifs ont été importés et analysés.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (err) {
       console.error('Erreur lors de l\'ajout de la laverie:', err);
-      alert(err instanceof Error ? err.message : 'Une erreur est survenue lors de l\'ajout de la laverie');
+      toast({
+        title: "Erreur",
+        description: err instanceof Error ? err.message : 'Une erreur est survenue lors de l\'ajout de la laverie',
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -465,7 +473,6 @@ const Laundries: React.FC = () => {
       <AddLaundryModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddLaundry}
       />
 
       {/* Modal d'ajout de machines */}

@@ -1,0 +1,6 @@
+{
+  "name": "rounded-webhook",
+  "version": "1.0.0",
+  "description": "Webhook handler for ROUNDED integration",
+  "verify_jwt": false
+}
