@@ -3,7 +3,7 @@ name: Deploy ROUNDED Webhook
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'supabase/functions/rounded-webhook/**'
 
