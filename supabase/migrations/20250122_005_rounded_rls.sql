@@ -11,7 +11,7 @@ ALTER TABLE rounded_tools_usage ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Lecture des appels par propriétaire"
     ON rounded_calls FOR SELECT
     USING (
-        auth.uid() = user_id 
+        auth.uid() = owner_id 
         OR EXISTS (
             SELECT 1 FROM laundries 
             WHERE id = rounded_calls.laundry_id 
@@ -27,12 +27,11 @@ CREATE POLICY "Insertion des appels par Edge Function"
 CREATE POLICY "Lecture des segments par propriétaire"
     ON rounded_call_segments FOR SELECT
     USING (
-        auth.uid() = user_id 
-        OR EXISTS (
+        EXISTS (
             SELECT 1 FROM rounded_calls rc
             JOIN laundries l ON l.id = rc.laundry_id
             WHERE rc.id = rounded_call_segments.call_id
-            AND l.owner_id = auth.uid()
+            AND (rc.owner_id = auth.uid() OR l.owner_id = auth.uid())
         )
     );
 
@@ -44,12 +43,11 @@ CREATE POLICY "Insertion des segments par Edge Function"
 CREATE POLICY "Lecture des variables par propriétaire"
     ON rounded_variables FOR SELECT
     USING (
-        auth.uid() = user_id 
-        OR EXISTS (
+        EXISTS (
             SELECT 1 FROM rounded_calls rc
             JOIN laundries l ON l.id = rc.laundry_id
             WHERE rc.id = rounded_variables.call_id
-            AND l.owner_id = auth.uid()
+            AND (rc.owner_id = auth.uid() OR l.owner_id = auth.uid())
         )
     );
 
@@ -58,19 +56,18 @@ CREATE POLICY "Insertion des variables par Edge Function"
     WITH CHECK (true);
 
 -- Politiques pour rounded_tools_usage
-CREATE POLICY "Lecture des utilisations d'outils par propriétaire"
+CREATE POLICY "Lecture des outils par propriétaire"
     ON rounded_tools_usage FOR SELECT
     USING (
-        auth.uid() = user_id 
-        OR EXISTS (
+        EXISTS (
             SELECT 1 FROM rounded_calls rc
             JOIN laundries l ON l.id = rc.laundry_id
             WHERE rc.id = rounded_tools_usage.call_id
-            AND l.owner_id = auth.uid()
+            AND (rc.owner_id = auth.uid() OR l.owner_id = auth.uid())
         )
     );
 
-CREATE POLICY "Insertion des utilisations d'outils par Edge Function"
+CREATE POLICY "Insertion des outils par Edge Function"
     ON rounded_tools_usage FOR INSERT
     WITH CHECK (true);
 
