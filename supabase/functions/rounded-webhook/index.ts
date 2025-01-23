@@ -62,13 +62,13 @@ async function handleCallEvent(event: RoundedEvent) {
     return
   }
 
-  const userId = await getOwnerIdFromLaundryId(laundryId)
-  if (!userId) {
-    console.error(`No user found for laundry: ${laundryId}`)
+  const ownerId = await getOwnerIdFromLaundryId(laundryId)
+  if (!ownerId) {
+    console.error(`No owner found for laundry: ${laundryId}`)
     return
   }
 
-  // Insertion de l'appel principal avec gestion d'erreur améliorée
+  // Insertion de l'appel principal
   const { data: callData, error: callError } = await supabaseClient
     .from('rounded_calls')
     .upsert({
@@ -82,7 +82,7 @@ async function handleCallEvent(event: RoundedEvent) {
       transcript: event.data.transcript,
       intent: event.data.intent,
       laundry_id: laundryId,
-      user_id: userId,
+      owner_id: ownerId,
       updated_at: new Date().toISOString()
     })
     .select()
@@ -93,66 +93,59 @@ async function handleCallEvent(event: RoundedEvent) {
     throw new Error(`Failed to insert call: ${callError.message}`)
   }
 
-  // Gestion des segments d'appel avec try-catch
+  // Gestion des segments d'appel
   if (event.data.task_name) {
-    try {
-      const { error: segmentError } = await supabaseClient
-        .from('rounded_call_segments')
-        .insert({
-          call_id: callData.id,
-          task_name: event.data.task_name,
-          transcript: event.data.transcript,
-          user_id: userId
-        })
-
-      if (segmentError) throw segmentError
-    } catch (error) {
-      console.error('Error inserting call segment:', error)
-    }
-  }
-
-  // Gestion des variables extraites avec try-catch
-  if (event.data.variables) {
-    try {
-      const variables = Object.entries(event.data.variables).map(([name, value]) => ({
+    const { error: segmentError } = await supabaseClient
+      .from('rounded_call_segments')
+      .insert({
         call_id: callData.id,
-        name,
-        value: String(value),
-        type: typeof value as 'string' | 'boolean' | 'number',
-        source: 'extracted',
-        user_id: userId
-      }))
+        task_name: event.data.task_name,
+        transcript: event.data.transcript,
+        success: true,
+        owner_id: ownerId
+      })
 
-      if (variables.length > 0) {
-        const { error: variablesError } = await supabaseClient
-          .from('rounded_variables')
-          .insert(variables)
-
-        if (variablesError) throw variablesError
-      }
-    } catch (error) {
-      console.error('Error inserting variables:', error)
+    if (segmentError) {
+      console.error('Error inserting segment:', segmentError)
     }
   }
 
-  // Gestion de l'utilisation des outils avec try-catch
-  if (event.data.tool_usage) {
-    try {
-      const { error: toolError } = await supabaseClient
-        .from('rounded_tools_usage')
-        .insert({
-          call_id: callData.id,
-          tool_name: event.data.tool_usage.name,
-          parameters: event.data.tool_usage.parameters,
-          result: event.data.tool_usage.result,
-          success: event.data.tool_usage.success,
-          error_message: event.data.tool_usage.error_message,
-          user_id: userId
-        })
+  // Gestion des variables
+  if (event.data.variables) {
+    const variables = Object.entries(event.data.variables).map(([name, value]) => ({
+      call_id: callData.id,
+      name,
+      value: String(value),
+      type: typeof value as 'string' | 'boolean' | 'number',
+      source: 'extracted',
+      owner_id: ownerId
+    }))
 
-      if (toolError) throw toolError
-    } catch (error) {
-      console.error('Error inserting tool usage:', error)
+    const { error: variablesError } = await supabaseClient
+      .from('rounded_variables')
+      .insert(variables)
+
+    if (variablesError) {
+      console.error('Error inserting variables:', variablesError)
+    }
+  }
+
+  // Gestion des outils utilisés
+  if (event.data.tool_usage) {
+    const { error: toolError } = await supabaseClient
+      .from('rounded_tools_usage')
+      .insert({
+        call_id: callData.id,
+        tool_name: event.data.tool_usage.name,
+        parameters: event.data.tool_usage.parameters,
+        result: event.data.tool_usage.result,
+        success: event.data.tool_usage.success,
+        error_message: event.data.tool_usage.error_message,
+        owner_id: ownerId
+      })
+
+    if (toolError) {
+      console.error('Error inserting tool usage:', toolError)
     }
   }
 
@@ -168,13 +161,13 @@ serve(async (req) => {
 
     // Parsing du corps de la requête
     const event: RoundedEvent = await req.json()
+    const result = await handleCallEvent(event)
 
-    // Traitement de l'événement
-    await handleCallEvent(event)
-
-    return new Response('OK', { status: 200 })
+    return new Response(JSON.stringify(result), {
+      headers: { 'Content-Type': 'application/json' }
+    })
   } catch (error) {
     console.error('Error processing webhook:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    return new Response(error.message, { status: 500 })
   }
 })
