@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'supabase/functions/rounded-webhook/**'
+      - '.github/workflows/deploy-rounded-webhook.yml'
 
 jobs:
   deploy:
